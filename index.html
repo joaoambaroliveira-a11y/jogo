@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defesa Espacial</title>
+    <title>Defesa Espacial 3D</title>
     <style>
         body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
         #game-container { position: relative; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); }
+
+        /* LUA 3D */
+        .moon {
+            position: absolute; top: 10%; right: 15%;
+            width: 150px; height: 150px;
+            /* Gradiente radial para efeito de esfera 3D */
+            background: radial-gradient(circle at 30% 30%, #fefefe, #d1d1d1 50%, #777 90%, #333);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+            z-index: 0;
+        }
 
         /* NAVE ESPACIAL */
         #spaceship {
@@ -15,7 +26,7 @@
             transform: translateX(-50%);
             z-index: 5;
         }
-        .ship-body { width: 30px; height: 45px; background: #silver; border-radius: 50% 50% 20% 20%; margin: 0 auto; background: #d1d1d1; }
+        .ship-body { width: 30px; height: 45px; background: #d1d1d1; border-radius: 50% 50% 20% 20%; margin: 0 auto; }
         .ship-wing { position: absolute; bottom: 15px; width: 20px; height: 25px; background: #a1a1a1; clip-path: polygon(100% 0, 0% 100%, 100% 100%); }
         .wing-l { left: 0px; transform: scaleX(-1); }
         .wing-r { right: 0px; }
@@ -42,6 +53,7 @@
 <body>
 
 <div id="game-container">
+    <div class="moon"></div>
     <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
     
     <div id="spaceship">
