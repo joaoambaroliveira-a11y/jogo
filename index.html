@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Guardian: Lua Cheia</title>
+    <title>Guardião Espacial: Satélites</title>
     <style>
         body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
         
@@ -15,27 +15,35 @@
             z-index: 1;
         }
 
-        /* --- A LUA --- */
+        /* --- LUA --- */
         .moon {
-            position: absolute;
-            top: 50px;
-            right: 10%;
-            width: 120px;
-            height: 120px;
-            background: #f5f3ce;
-            border-radius: 50%;
+            position: absolute; top: 50px; right: 10%; width: 120px; height: 120px;
+            background: #f5f3ce; border-radius: 50%;
             box-shadow: 0 0 50px rgba(245, 243, 206, 0.4), inset -15px -15px 30px rgba(0,0,0,0.2);
-            z-index: 0; /* Fica atrás do foguete e meteoros */
-            animation: moonFloat 120s linear infinite;
+            z-index: 0; animation: moonFloat 150s linear infinite;
         }
 
-        /* Crateras da Lua */
-        .moon::before {
-            content: '';
+        /* --- SATÉLITE --- */
+        .satellite {
             position: absolute;
-            top: 20px; left: 30px; width: 20px; height: 20px;
-            background: rgba(0,0,0,0.05); border-radius: 50%;
-            box-shadow: 40px 30px 0 rgba(0,0,0,0.05), 10px 50px 0 rgba(0,0,0,0.05);
+            width: 40px;
+            height: 15px;
+            z-index: 2;
+            animation: moveSat 8s linear forwards;
+        }
+        /* Corpo do satélite */
+        .sat-body { width: 12px; height: 12px; background: #999; margin: 0 auto; border-radius: 2px; }
+        /* Painéis solares */
+        .sat-wing { 
+            position: absolute; top: 4px; width: 15px; height: 6px; 
+            background: #3366ff; border: 1px solid #fff; 
+        }
+        .wing-left { left: 0; }
+        .wing-right { right: 0; }
+
+        @keyframes moveSat {
+            from { left: -50px; }
+            to { left: 110vw; }
         }
 
         @keyframes moonFloat {
@@ -43,7 +51,7 @@
             to { transform: translateY(110vh); }
         }
 
-        /* --- RESTO DO JOGO --- */
+        /* --- ELEMENTOS DO JOGO --- */
         #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px #00ffcc; z-index: 10; }
         #rocket { position: absolute; bottom: 30px; left: 50%; width: 50px; height: 50px; transform: translateX(-50%); z-index: 5; }
         .laser { position: absolute; width: 4px; height: 20px; background: #ff0055; box-shadow: 0 0 8px #ff0055; border-radius: 2px; z-index: 4; }
@@ -62,7 +70,8 @@
 <body>
 
 <div id="game-container">
-    <div class="moon"></div> <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
+    <div class="moon"></div>
+    <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
     
     <div id="rocket">
         <svg viewBox="0 0 24 24" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"></path></svg>
@@ -87,6 +96,7 @@
     let score = 0;
     let gameActive = true;
 
+    // Movimentação
     document.addEventListener('keydown', (e) => {
         if (!gameActive) return;
         const speed = 40;
@@ -137,6 +147,23 @@
         }, 20);
     }
 
+    // Função para criar Satélites decorativos
+    function createSatellite() {
+        if (!gameActive) return;
+        const sat = document.createElement('div');
+        sat.classList.add('satellite');
+        sat.style.top = Math.random() * (window.innerHeight / 2) + 'px'; // Aparece na metade superior
+        
+        sat.innerHTML = `
+            <div class="sat-wing wing-left"></div>
+            <div class="sat-body"></div>
+            <div class="sat-wing wing-right"></div>
+        `;
+        
+        container.appendChild(sat);
+        setTimeout(() => sat.remove(), 8000); // Remove após atravessar a tela
+    }
+
     function checkCollision(obj1, obj2) {
         const r1 = obj1.getBoundingClientRect();
         const r2 = obj2.getBoundingClientRect();
@@ -154,6 +181,7 @@
     }
 
     setInterval(createMeteor, 1000);
+    setInterval(createSatellite, 4000); // Cria um satélite a cada 4 segundos
 </script>
 </body>
 </html>
