@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guardião Espacial: Satélites</title>
+    <title>Space Guardian: Invasão</title>
     <style>
         body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
         
@@ -15,7 +15,7 @@
             z-index: 1;
         }
 
-        /* --- LUA --- */
+        /* --- ELEMENTOS DE FUNDO --- */
         .moon {
             position: absolute; top: 50px; right: 10%; width: 120px; height: 120px;
             background: #f5f3ce; border-radius: 50%;
@@ -23,38 +23,70 @@
             z-index: 0; animation: moonFloat 150s linear infinite;
         }
 
-        /* --- SATÉLITE --- */
         .satellite {
-            position: absolute;
-            width: 40px;
-            height: 15px;
-            z-index: 2;
+            position: absolute; width: 40px; height: 15px; z-index: 2;
             animation: moveSat 8s linear forwards;
         }
-        /* Corpo do satélite */
         .sat-body { width: 12px; height: 12px; background: #999; margin: 0 auto; border-radius: 2px; }
-        /* Painéis solares */
-        .sat-wing { 
-            position: absolute; top: 4px; width: 15px; height: 6px; 
-            background: #3366ff; border: 1px solid #fff; 
-        }
+        .sat-wing { position: absolute; top: 4px; width: 15px; height: 6px; background: #3366ff; border: 1px solid #fff; }
         .wing-left { left: 0; }
         .wing-right { right: 0; }
 
-        @keyframes moveSat {
-            from { left: -50px; }
-            to { left: 110vw; }
+        /* --- A NAVE ESPACIAL --- */
+        #spaceship {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            width: 60px;
+            height: 70px;
+            transform: translateX(-50%);
+            z-index: 5;
+            transition: left 0.1s ease-out;
         }
 
-        @keyframes moonFloat {
-            from { transform: translateY(-150px); }
-            to { transform: translateY(110vh); }
+        .ship-body {
+            position: absolute;
+            top: 10px; left: 15px;
+            width: 30px; height: 45px;
+            background: #d1d1d1;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: inset -5px 0 10px #777;
         }
 
-        /* --- ELEMENTOS DO JOGO --- */
+        .ship-cockpit {
+            position: absolute;
+            top: 15px; left: 22px;
+            width: 16px; height: 12px;
+            background: #33ccff;
+            border-radius: 50%;
+            z-index: 6;
+        }
+
+        .ship-wing {
+            position: absolute;
+            bottom: 15px;
+            width: 20px; height: 25px;
+            background: #a1a1a1;
+            clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+        }
+        .wing-l { left: -5px; transform: scaleX(-1); }
+        .wing-r { right: -5px; }
+
+        .engine-fire {
+            position: absolute;
+            bottom: -5px; left: 22px;
+            width: 16px; height: 20px;
+            background: linear-gradient(to bottom, #00f2ff, transparent);
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: engineBurn 0.1s infinite alternate;
+        }
+
+        @keyframes engineBurn { from { height: 15px; opacity: 0.7; } to { height: 25px; opacity: 1; } }
+
+        /* --- JOGO --- */
         #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px #00ffcc; z-index: 10; }
-        #rocket { position: absolute; bottom: 30px; left: 50%; width: 50px; height: 50px; transform: translateX(-50%); z-index: 5; }
-        .laser { position: absolute; width: 4px; height: 20px; background: #ff0055; box-shadow: 0 0 8px #ff0055; border-radius: 2px; z-index: 4; }
+        .laser { position: absolute; width: 4px; height: 20px; background: #00ffcc; box-shadow: 0 0 8px #00ffcc; border-radius: 2px; z-index: 4; }
         .meteor { position: absolute; width: 45px; height: 45px; background: #444; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; box-shadow: inset -5px -5px 15px #000; z-index: 4; }
         
         #game-over-screen {
@@ -63,8 +95,9 @@
             text-align: center; z-index: 100;
         }
         button { background: #00ffcc; border: none; padding: 10px 20px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 15px; }
-        
-        @keyframes flicker { from { opacity: 0.5; height: 15px; } to { opacity: 1; height: 25px; } }
+
+        @keyframes moveSat { from { left: -50px; } to { left: 110vw; } }
+        @keyframes moonFloat { from { transform: translateY(-150px); } to { transform: translateY(110vh); } }
     </style>
 </head>
 <body>
@@ -73,9 +106,12 @@
     <div class="moon"></div>
     <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
     
-    <div id="rocket">
-        <svg viewBox="0 0 24 24" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"></path></svg>
-        <div style="width: 10px; height: 20px; background: orange; margin: -5px auto; border-radius: 50%; filter: blur(2px); animation: flicker 0.1s infinite alternate;"></div>
+    <div id="spaceship">
+        <div class="ship-wing wing-l"></div>
+        <div class="ship-wing wing-r"></div>
+        <div class="ship-body"></div>
+        <div class="ship-cockpit"></div>
+        <div class="engine-fire"></div>
     </div>
 
     <div id="game-over-screen">
@@ -87,29 +123,28 @@
 
 <script>
     const container = document.getElementById('game-container');
-    const rocket = document.getElementById('rocket');
+    const spaceship = document.getElementById('spaceship');
     const scoreVal = document.getElementById('score-val');
     const gameOverScreen = document.getElementById('game-over-screen');
     const finalScoreTxt = document.getElementById('final-score');
 
-    let rocketX = window.innerWidth / 2;
+    let shipX = window.innerWidth / 2;
     let score = 0;
     let gameActive = true;
 
-    // Movimentação
     document.addEventListener('keydown', (e) => {
         if (!gameActive) return;
         const speed = 40;
-        if (e.key === 'ArrowLeft' && rocketX > 40) rocketX -= speed;
-        if (e.key === 'ArrowRight' && rocketX < window.innerWidth - 40) rocketX += speed;
+        if (e.key === 'ArrowLeft' && shipX > 40) shipX -= speed;
+        if (e.key === 'ArrowRight' && shipX < window.innerWidth - 40) shipX += speed;
         if (e.key === ' ' || e.key === 'ArrowUp') shoot();
-        rocket.style.left = rocketX + 'px';
+        spaceship.style.left = shipX + 'px';
     });
 
     function shoot() {
         const laser = document.createElement('div');
         laser.classList.add('laser');
-        laser.style.left = rocketX + 'px';
+        laser.style.left = shipX + 'px';
         laser.style.bottom = '80px';
         container.appendChild(laser);
 
@@ -142,26 +177,19 @@
         const fallInterval = setInterval(() => {
             meteorY += 4 + (score / 200);
             meteor.style.top = meteorY + 'px';
-            if (checkCollision(meteor, rocket)) gameOver();
+            if (checkCollision(meteor, spaceship)) gameOver();
             if (meteorY > window.innerHeight || !gameActive) { clearInterval(fallInterval); meteor.remove(); }
         }, 20);
     }
 
-    // Função para criar Satélites decorativos
     function createSatellite() {
         if (!gameActive) return;
         const sat = document.createElement('div');
         sat.classList.add('satellite');
-        sat.style.top = Math.random() * (window.innerHeight / 2) + 'px'; // Aparece na metade superior
-        
-        sat.innerHTML = `
-            <div class="sat-wing wing-left"></div>
-            <div class="sat-body"></div>
-            <div class="sat-wing wing-right"></div>
-        `;
-        
+        sat.style.top = Math.random() * (window.innerHeight / 2) + 'px';
+        sat.innerHTML = `<div class="sat-wing wing-left"></div><div class="sat-body"></div><div class="sat-wing wing-right"></div>`;
         container.appendChild(sat);
-        setTimeout(() => sat.remove(), 8000); // Remove após atravessar a tela
+        setTimeout(() => sat.remove(), 8000);
     }
 
     function checkCollision(obj1, obj2) {
@@ -181,7 +209,7 @@
     }
 
     setInterval(createMeteor, 1000);
-    setInterval(createSatellite, 4000); // Cria um satélite a cada 4 segundos
+    setInterval(createSatellite, 4000);
 </script>
 </body>
 </html>
