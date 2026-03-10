@@ -3,79 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Guardian - Foguete</title>
+    <title>Space Guardian Pro</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #020205;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-        }
-
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png'), 
-                        radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
-        }
-
+        body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
+        #game-container { position: relative; width: 100vw; height: 100vh; background: radial-gradient(circle, #1b2735 0%, #090a0f 100%); }
+        
         /* Placar */
-        #ui-score {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 32px;
-            font-weight: bold;
-            text-shadow: 0 0 10px #00ffcc;
-            z-index: 10;
-        }
+        #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px #00ffcc; z-index: 10; }
 
         /* Foguete */
-        #rocket {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            width: 50px;
-            height: 50px;
-            transform: translateX(-50%);
-            transition: left 0.1s ease-out;
-        }
+        #rocket { position: absolute; bottom: 30px; left: 50%; width: 50px; height: 50px; transform: translateX(-50%); z-index: 5; }
 
-        .laser {
-            position: absolute;
-            width: 4px;
-            height: 20px;
-            background: #ff0055;
-            box-shadow: 0 0 8px #ff0055;
-            border-radius: 2px;
-        }
+        .laser { position: absolute; width: 4px; height: 20px; background: #ff0055; box-shadow: 0 0 8px #ff0055; border-radius: 2px; }
+        .meteor { position: absolute; width: 45px; height: 45px; background: #444; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; box-shadow: inset -5px -5px 15px #000; }
 
-        .meteor {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            background: #444;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; /* Formato irregular */
-            box-shadow: inset -5px -5px 15px #000;
+        /* Tela de Game Over */
+        #game-over-screen {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9); padding: 30px; border: 2px solid #00ffcc; border-radius: 15px;
+            text-align: center; z-index: 100;
         }
+        button {
+            background: #00ffcc; border: none; padding: 10px 20px; font-size: 18px; 
+            font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 15px;
+        }
+        button:hover { background: #00cca3; }
 
-        /* Animação de explosão simples */
-        .explosion {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: orange;
-            border-radius: 50%;
-            filter: blur(10px);
-            animation: explode 0.3s forwards;
-        }
-
-        @keyframes explode {
-            to { transform: scale(2); opacity: 0; }
-        }
+        @keyframes flicker { from { opacity: 0.5; height: 15px; } to { opacity: 1; height: 25px; } }
     </style>
 </head>
 <body>
@@ -84,40 +38,35 @@
     <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
     
     <div id="rocket">
-        <svg viewBox="0 0 24 24" fill="white">
-            <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"></path>
-            <path d="M12,18V2" stroke="rgba(255,255,255,0.2)"></path>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"></path></svg>
         <div style="width: 10px; height: 20px; background: orange; margin: -5px auto; border-radius: 50%; filter: blur(2px); animation: flicker 0.1s infinite alternate;"></div>
     </div>
-</div>
 
-<style>
-    @keyframes flicker { from { opacity: 0.5; height: 15px; } to { opacity: 1; height: 25px; } }
-</style>
+    <div id="game-over-screen">
+        <h1>FIM DE JOGO</h1>
+        <p>Sua pontuação final: <span id="final-score">0</span></p>
+        <button onclick="restartGame()">JOGAR NOVAMENTE</button>
+    </div>
+</div>
 
 <script>
     const container = document.getElementById('game-container');
     const rocket = document.getElementById('rocket');
     const scoreVal = document.getElementById('score-val');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreTxt = document.getElementById('final-score');
 
     let rocketX = window.innerWidth / 2;
     let score = 0;
     let gameActive = true;
 
-    // Movimentação e Tiro
+    // Movimentação
     document.addEventListener('keydown', (e) => {
         if (!gameActive) return;
-        
-        const speed = 30;
+        const speed = 40;
         if (e.key === 'ArrowLeft' && rocketX > 40) rocketX -= speed;
         if (e.key === 'ArrowRight' && rocketX < window.innerWidth - 40) rocketX += speed;
-        
-        // Atirar com Espaço ou Seta para Cima
-        if (e.key === ' ' || e.key === 'ArrowUp') {
-            shoot();
-        }
-
+        if (e.key === ' ' || e.key === 'ArrowUp') shoot();
         rocket.style.left = rocketX + 'px';
     });
 
@@ -130,14 +79,11 @@
 
         let laserPos = 80;
         const laserInterval = setInterval(() => {
-            laserPos += 12;
+            laserPos += 15;
             laser.style.bottom = laserPos + 'px';
 
-            // Colisão do Laser com Meteoros
-            const meteors = document.querySelectorAll('.meteor');
-            meteors.forEach(met => {
+            document.querySelectorAll('.meteor').forEach(met => {
                 if (checkCollision(laser, met)) {
-                    createExplosion(met.offsetLeft, met.offsetTop);
                     met.remove();
                     laser.remove();
                     clearInterval(laserInterval);
@@ -146,16 +92,12 @@
                 }
             });
 
-            if (laserPos > window.innerHeight) {
-                clearInterval(laserInterval);
-                laser.remove();
-            }
+            if (laserPos > window.innerHeight) { clearInterval(laserInterval); laser.remove(); }
         }, 16);
     }
 
     function createMeteor() {
         if (!gameActive) return;
-
         const meteor = document.createElement('div');
         meteor.classList.add('meteor');
         meteor.style.left = Math.random() * (window.innerWidth - 50) + 'px';
@@ -163,49 +105,33 @@
         container.appendChild(meteor);
 
         let meteorY = -60;
-        const fallSpeed = 3 + (score / 100); // Fica mais difícil com o tempo
-
         const fallInterval = setInterval(() => {
-            meteorY += fallSpeed;
+            meteorY += 4 + (score / 200);
             meteor.style.top = meteorY + 'px';
 
-            // Colisão Meteoro com Foguete
-            if (checkCollision(meteor, rocket)) {
-                gameOver();
-            }
-
-            if (meteorY > window.innerHeight) {
-                clearInterval(fallInterval);
-                meteor.remove();
-            }
+            if (checkCollision(meteor, rocket)) gameOver();
+            if (meteorY > window.innerHeight || !gameActive) { clearInterval(fallInterval); meteor.remove(); }
         }, 20);
-    }
-
-    function createExplosion(x, y) {
-        const exp = document.createElement('div');
-        exp.classList.add('explosion');
-        exp.style.left = x + 'px';
-        exp.style.top = y + 'px';
-        container.appendChild(exp);
-        setTimeout(() => exp.remove(), 300);
     }
 
     function checkCollision(obj1, obj2) {
         const r1 = obj1.getBoundingClientRect();
         const r2 = obj2.getBoundingClientRect();
-        return !(r1.right < r2.left || r1.left > r2.right || 
-                 r1.bottom < r2.top || r1.top > r2.bottom);
+        return !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom);
     }
 
     function gameOver() {
         gameActive = false;
-        alert("MISSÃO ABORTADA!\nSua pontuação final: " + score);
-        location.reload();
+        finalScoreTxt.innerText = score;
+        gameOverScreen.style.display = 'block';
     }
 
-    // Criar meteoros a cada 1.2 segundos
-    setInterval(createMeteor, 1200);
+    // A função mágica para reiniciar
+    function restartGame() {
+        location.reload(); 
+    }
 
+    setInterval(createMeteor, 1000);
 </script>
 </body>
 </html>
