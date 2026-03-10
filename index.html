@@ -1,1 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missão Espacial: Esquiva</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #050510;
+            font-family: 'Courier New', Courier, monospace;
+        }
 
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+        }
+
+        #rocket {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            width: 40px;
+            height: 60px;
+            background-color: #f0f0f0;
+            border-radius: 50% 50% 10% 10%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Detalhes do foguete */
+        #rocket::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: orange;
+            border-radius: 50%;
+            box-shadow: 0 0 10px red;
+            animation: flame 0.1s infinite alternate;
+        }
+
+        @keyframes flame {
+            from { height: 15px; opacity: 0.8; }
+            to { height: 25px; opacity: 1; }
+        }
+
+        .meteor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #555;
+            border-radius: 50%;
+            box-shadow: inset -5px -5px 10px #000;
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="score">Pontos: 0</div>
+    <div id="rocket"></div>
+</div>
+
+<script>
+    const rocket = document.getElementById('rocket');
+    const container = document.getElementById('game-container');
+    const scoreElement = document.getElementById('score');
+    
+    let rocketX = window.innerWidth / 2;
+    let score = 0;
+    let gameActive = true;
+
+    // Movimentação do Foguete
+    document.addEventListener('keydown', (e) => {
+        if (!gameActive) return;
+        
+        const step = 20;
+        if (e.key === 'ArrowLeft' && rocketX > 20) {
+            rocketX -= step;
+        } else if (e.key === 'ArrowRight' && rocketX < window.innerWidth - 20) {
+            rocketX += step;
+        }
+        rocket.style.left = rocketX + 'px';
+    });
+
+    // Função para criar meteoros
+    function createMeteor() {
+        if (!gameActive) return;
+
+        const meteor = document.createElement('div');
+        meteor.classList.add('meteor');
+        meteor.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+        meteor.style.top = '-50px';
+        container.appendChild(meteor);
+
+        let meteorY = -50;
+        const fallSpeed = 5 + Math.random() * 5;
+
+        const fallInterval = setInterval(() => {
+            meteorY += fallSpeed;
+            meteor.style.top = meteorY + 'px';
+
+            // Checar Colisão
+            const rocketRect = rocket.getBoundingClientRect();
+            const meteorRect = meteor.getBoundingClientRect();
+
+            if (
+                meteorRect.left < rocketRect.right &&
+                meteorRect.right > rocketRect.left &&
+                meteorRect.top < rocketRect.bottom &&
+                meteorRect.bottom > rocketRect.top
+            ) {
+                gameOver();
+            }
+
+            // Remover meteoro que saiu da tela e somar pontos
+            if (meteorY > window.innerHeight) {
+                clearInterval(fallInterval);
+                meteor.remove();
+                score++;
+                scoreElement.innerText = `Pontos: ${score}`;
+            }
+        }, 20);
+    }
+
+    function gameOver() {
+        gameActive = false;
+        alert(`Fim de Jogo! Sua pontuação: ${score}`);
+        location.reload(); // Reinicia o jogo
+    }
+
+    // Gerar meteoros periodicamente
+    setInterval(createMeteor, 1000);
+
+</script>
+</body>
+</html>
