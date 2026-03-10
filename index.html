@@ -3,39 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Guardian Pro</title>
+    <title>Space Guardian: Lua Cheia</title>
     <style>
         body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
-        #game-container { position: relative; width: 100vw; height: 100vh; background: radial-gradient(circle, #1b2735 0%, #090a0f 100%); }
         
-        /* Placar */
+        #game-container { 
+            position: relative; 
+            width: 100vw; 
+            height: 100vh; 
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); 
+            z-index: 1;
+        }
+
+        /* --- A LUA --- */
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 10%;
+            width: 120px;
+            height: 120px;
+            background: #f5f3ce;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(245, 243, 206, 0.4), inset -15px -15px 30px rgba(0,0,0,0.2);
+            z-index: 0; /* Fica atrás do foguete e meteoros */
+            animation: moonFloat 120s linear infinite;
+        }
+
+        /* Crateras da Lua */
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 30px; width: 20px; height: 20px;
+            background: rgba(0,0,0,0.05); border-radius: 50%;
+            box-shadow: 40px 30px 0 rgba(0,0,0,0.05), 10px 50px 0 rgba(0,0,0,0.05);
+        }
+
+        @keyframes moonFloat {
+            from { transform: translateY(-150px); }
+            to { transform: translateY(110vh); }
+        }
+
+        /* --- RESTO DO JOGO --- */
         #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px #00ffcc; z-index: 10; }
-
-        /* Foguete */
         #rocket { position: absolute; bottom: 30px; left: 50%; width: 50px; height: 50px; transform: translateX(-50%); z-index: 5; }
-
-        .laser { position: absolute; width: 4px; height: 20px; background: #ff0055; box-shadow: 0 0 8px #ff0055; border-radius: 2px; }
-        .meteor { position: absolute; width: 45px; height: 45px; background: #444; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; box-shadow: inset -5px -5px 15px #000; }
-
-        /* Tela de Game Over */
+        .laser { position: absolute; width: 4px; height: 20px; background: #ff0055; box-shadow: 0 0 8px #ff0055; border-radius: 2px; z-index: 4; }
+        .meteor { position: absolute; width: 45px; height: 45px; background: #444; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; box-shadow: inset -5px -5px 15px #000; z-index: 4; }
+        
         #game-over-screen {
             display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.9); padding: 30px; border: 2px solid #00ffcc; border-radius: 15px;
             text-align: center; z-index: 100;
         }
-        button {
-            background: #00ffcc; border: none; padding: 10px 20px; font-size: 18px; 
-            font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 15px;
-        }
-        button:hover { background: #00cca3; }
-
+        button { background: #00ffcc; border: none; padding: 10px 20px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 15px; }
+        
         @keyframes flicker { from { opacity: 0.5; height: 15px; } to { opacity: 1; height: 25px; } }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
+    <div class="moon"></div> <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
     
     <div id="rocket">
         <svg viewBox="0 0 24 24" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"></path></svg>
@@ -44,7 +71,7 @@
 
     <div id="game-over-screen">
         <h1>FIM DE JOGO</h1>
-        <p>Sua pontuação final: <span id="final-score">0</span></p>
+        <p>Sua pontuação: <span id="final-score">0</span></p>
         <button onclick="restartGame()">JOGAR NOVAMENTE</button>
     </div>
 </div>
@@ -60,7 +87,6 @@
     let score = 0;
     let gameActive = true;
 
-    // Movimentação
     document.addEventListener('keydown', (e) => {
         if (!gameActive) return;
         const speed = 40;
@@ -81,7 +107,6 @@
         const laserInterval = setInterval(() => {
             laserPos += 15;
             laser.style.bottom = laserPos + 'px';
-
             document.querySelectorAll('.meteor').forEach(met => {
                 if (checkCollision(laser, met)) {
                     met.remove();
@@ -91,7 +116,6 @@
                     scoreVal.innerText = score;
                 }
             });
-
             if (laserPos > window.innerHeight) { clearInterval(laserInterval); laser.remove(); }
         }, 16);
     }
@@ -108,7 +132,6 @@
         const fallInterval = setInterval(() => {
             meteorY += 4 + (score / 200);
             meteor.style.top = meteorY + 'px';
-
             if (checkCollision(meteor, rocket)) gameOver();
             if (meteorY > window.innerHeight || !gameActive) { clearInterval(fallInterval); meteor.remove(); }
         }, 20);
@@ -126,7 +149,6 @@
         gameOverScreen.style.display = 'block';
     }
 
-    // A função mágica para reiniciar
     function restartGame() {
         location.reload(); 
     }
