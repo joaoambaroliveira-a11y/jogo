@@ -1,107 +1,21 @@
-<!DOCTYPE html>
-<html lang="pt-pt">
-<head>
-    <meta charset="UTF-8">
-    <title>Defesa Espacial - Modo Automático</title>
-    <style>
-        body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
-        #game-container { position: relative; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); }
+function autoPilot() {
+    const aliens = document.querySelectorAll('.alien');
+    if (aliens.length > 0) {
+        // Encontrar o alien com o Y maior (mais próximo da parte inferior)
+        let closestAlien = null;
+        let maxTop = -1;
+        
+        aliens.forEach(alien => {
+            const top = parseInt(alien.style.top);
+            if (top > maxTop) {
+                maxTop = top;
+                closestAlien = alien;
+            }
+        });
 
-        .moon {
-            position: absolute; top: 10%; right: 15%; width: 150px; height: 150px;
-            background: radial-gradient(circle at 30% 30%, #fefefe, #d1d1d1 50%, #777 90%, #333);
-            border-radius: 50%; box-shadow: 0 0 40px rgba(255, 255, 255, 0.2); z-index: 0;
-        }
-
-        #spaceship { position: absolute; bottom: 40px; width: 50px; height: 60px; z-index: 5; transition: left 0.3s ease-out; }
-        .body { width: 20px; height: 40px; background: #ddd; margin: 0 auto; border-radius: 5px 5px 0 0; }
-        .cockpit { width: 12px; height: 12px; background: #33ccff; margin: 5px auto; border-radius: 50%; }
-        .wing { position: absolute; bottom: 0; width: 20px; height: 30px; background: #888; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-        .wing-left { left: 0px; } .wing-right { right: 0px; }
-
-        .alien { position: absolute; width: 40px; height: 40px; background: #2ecc71; border-radius: 50% 50% 40% 40%; }
-        .laser { position: absolute; width: 4px; height: 20px; background: #ffcc00; z-index: 4; }
-        #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-<div id="game-container">
-    <div class="moon"></div>
-    <div id="ui-score">PONTOS AUTOMÁTICOS: <span id="score-val">0</span></div>
-    
-    <div id="spaceship">
-        <div class="wing wing-left"></div>
-        <div class="wing wing-right"></div>
-        <div class="body"><div class="cockpit"></div></div>
-    </div>
-</div>
-
-<script>
-    const container = document.getElementById('game-container');
-    const spaceship = document.getElementById('spaceship');
-    const scoreVal = document.getElementById('score-val');
-
-    let shipX = window.innerWidth / 2;
-    let score = 0;
-
-    // IA: Seguir o inimigo mais próximo
-    function autoPilot() {
-        const aliens = document.querySelectorAll('.alien');
-        if (aliens.length > 0) {
-            // Pega o primeiro alien da lista para seguir
-            const targetX = aliens[0].offsetLeft;
-            shipX = targetX;
+        if (closestAlien) {
+            shipX = closestAlien.offsetLeft;
             spaceship.style.left = shipX + 'px';
         }
     }
-
-    // IA: Atirar automaticamente
-    function autoShoot() {
-        const laser = document.createElement('div');
-        laser.classList.add('laser');
-        laser.style.left = (shipX + 23) + 'px';
-        laser.style.bottom = '90px';
-        container.appendChild(laser);
-
-        let laserPos = 90;
-        const interval = setInterval(() => {
-            laserPos += 20;
-            laser.style.bottom = laserPos + 'px';
-            
-            document.querySelectorAll('.alien').forEach(alien => {
-                const rectL = laser.getBoundingClientRect();
-                const rectA = alien.getBoundingClientRect();
-                if (rectL.left < rectA.right && rectL.right > rectA.left && rectL.top < rectA.bottom) {
-                    alien.remove();
-                    laser.remove();
-                    clearInterval(interval);
-                    score += 10;
-                    scoreVal.innerText = score;
-                }
-            });
-            if (laserPos > window.innerHeight) { clearInterval(interval); laser.remove(); }
-        }, 16);
-    }
-
-    function createAlien() {
-        const alien = document.createElement('div');
-        alien.classList.add('alien');
-        alien.style.left = Math.random() * (window.innerWidth - 50) + 'px';
-        alien.style.top = '-60px';
-        container.appendChild(alien);
-
-        let alienY = -60;
-        const move = setInterval(() => {
-            alienY += 5;
-            alien.style.top = alienY + 'px';
-            if (alienY > window.innerHeight) { clearInterval(move); alien.remove(); }
-        }, 20);
-    }
-
-    setInterval(createAlien, 800);
-    setInterval(autoPilot, 500);
-    setInterval(autoShoot, 300);
-</script>
-</body>
-</html>
+}
