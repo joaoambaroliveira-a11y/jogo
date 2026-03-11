@@ -1,47 +1,175 @@
 <!DOCTYPE html>
-<html>
-<body>
-  <h3>Segure a tecla "Espaço" para atirar</h3>
-  <canvas id="gameCanvas" width="400" height="200" style="border:1px solid #000;"></canvas>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defesa Espacial - Controle Manual</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #020205; font-family: 'Segoe UI', sans-serif; color: white; }
+        #game-container { position: relative; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); }
 
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let atirando = false;
-    let intervaloTiro = 0;
-
-    // Detecta quando a tecla é pressionada
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') atirando = true;
-    });
-
-    // Detecta quando a tecla é solta
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') atirando = false;
-    });
-
-    function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (atirando) {
-        intervaloTiro++;
-        // Controla a cadência (atira a cada 10 frames)
-        if (intervaloTiro % 10 === 0) {
-          console.log("🔥 TIRO!"); 
-          desenharTiro();
+        /* LUA 3D */
+        .moon {
+            position: absolute; top: 10%; right: 15%; width: 150px; height: 150px;
+            background: radial-gradient(circle at 30% 30%, #fefefe, #d1d1d1 50%, #777 90%, #333);
+            border-radius: 50%; box-shadow: 0 0 40px rgba(255, 255, 255, 0.2); z-index: 0;
         }
-      }
 
-      requestAnimationFrame(gameLoop);
+        /* NAVE ESPACIAL */
+        #spaceship {
+            position: absolute; bottom: 40px; left: 50%;
+            width: 50px; height: 60px;
+            transform: translateX(-50%);
+            z-index: 5;
+            transition: left 0.1s linear;
+        }
+        .body { width: 20px; height: 40px; background: #ddd; margin: 0 auto; border-radius: 5px 5px 0 0; }
+        .cockpit { width: 12px; height: 12px; background: #33ccff; margin: 5px auto; border-radius: 50%; }
+        .wing { position: absolute; bottom: 0; width: 20px; height: 30px; background: #888; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+        .wing-left { left: -5px; }
+        .wing-right { right: -5px; }
+
+        /* ALIEN */
+        .alien {
+            position: absolute; width: 45px; height: 45px;
+            background: #2ecc71; border-radius: 50% 50% 40% 40%;
+        }
+        .alien::before, .alien::after {
+            content: ''; position: absolute; top: 10px; width: 10px; height: 10px;
+            background: white; border-radius: 50%;
+        }
+        .alien::before { left: 8px; }
+        .alien::after { right: 8px; }
+
+        /* LASER E UI */
+        .laser { position: absolute; width: 4px; height: 20px; background: #00ffcc; box-shadow: 0 0 8px #00ffcc; border-radius: 2px; }
+        #ui-score { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; font-weight: bold; }
+        
+        #game-over-screen { 
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: rgba(0, 0, 0, 0.9); padding: 30px; border: 2px solid #2ecc71; 
+            border-radius: 15px; text-align: center; z-index: 100; 
+        }
+        button { background: #2ecc71; border: none; padding: 10px 20px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 15px; color: black; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="moon"></div>
+    <div id="ui-score">PONTOS: <span id="score-val">0</span></div>
+    
+    <div id="spaceship">
+        <div class="wing wing-left"></div>
+        <div class="wing wing-right"></div>
+        <div class="body">
+            <div class="cockpit"></div>
+        </div>
+    </div>
+
+    <div id="game-over-screen">
+        <h1>GAME OVER</h1>
+        <p>Sua pontuação final: <span id="final-score">0</span></p>
+        <button onclick="location.reload()">JOGAR NOVAMENTE</button>
+    </div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const spaceship = document.getElementById('spaceship');
+    const scoreVal = document.getElementById('score-val');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreTxt = document.getElementById('final-score');
+
+    let shipX = window.innerWidth / 2;
+    let score = 0;
+    let gameActive = true;
+
+    // --- CONTROLES MANUAIS ---
+    document.addEventListener('keydown', (e) => {
+        if (!gameActive) return;
+        
+        const speed = 40;
+        if (e.key === 'ArrowLeft' && shipX > 40) {
+            shipX -= speed;
+        } else if (e.key === 'ArrowRight' && shipX < window.innerWidth - 40) {
+            shipX += speed;
+        }
+        
+        if (e.key === ' ' || e.key === 'ArrowUp') {
+            shoot();
+        }
+        
+        spaceship.style.left = shipX + 'px';
+    });
+
+    function shoot() {
+        const laser = document.createElement('div');
+        laser.classList.add('laser');
+        laser.style.left = shipX + 'px';
+        laser.style.bottom = '90px';
+        container.appendChild(laser);
+
+        let laserPos = 90;
+        const laserInterval = setInterval(() => {
+            laserPos += 15;
+            laser.style.bottom = laserPos + 'px';
+            
+            document.querySelectorAll('.alien').forEach(alien => {
+                if (checkCollision(laser, alien)) {
+                    alien.remove();
+                    laser.remove();
+                    clearInterval(laserInterval);
+                    score += 10;
+                    scoreVal.innerText = score;
+                }
+            });
+
+            if (laserPos > window.innerHeight) { 
+                clearInterval(laserInterval); 
+                laser.remove(); 
+            }
+        }, 16);
     }
 
-    function desenharTiro() {
-      ctx.fillStyle = 'red';
-      ctx.fillRect(Math.random() * canvas.width, 50, 5, 10);
+    function createAlien() {
+        if (!gameActive) return;
+        const alien = document.createElement('div');
+        alien.classList.add('alien');
+        alien.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+        alien.style.top = '-60px';
+        container.appendChild(alien);
+
+        let alienY = -60;
+        const moveInterval = setInterval(() => {
+            alienY += 4 + (score / 200);
+            alien.style.top = alienY + 'px';
+            
+            if (checkCollision(alien, spaceship)) {
+                gameOver();
+            }
+
+            if (alienY > window.innerHeight || !gameActive) { 
+                clearInterval(moveInterval); 
+                alien.remove(); 
+            }
+        }, 20);
     }
 
-    gameLoop();
-  </script>
+    function checkCollision(obj1, obj2) {
+        const r1 = obj1.getBoundingClientRect();
+        const r2 = obj2.getBoundingClientRect();
+        return !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom);
+    }
+
+    function gameOver() {
+        gameActive = false;
+        finalScoreTxt.innerText = score;
+        gameOverScreen.style.display = 'block';
+    }
+
+    // Gerar aliens a cada 1 segundo
+    setInterval(createAlien, 1000);
+</script>
 </body>
 </html>
