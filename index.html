@@ -101,7 +101,15 @@
 
     setInterval(createAlien, 800);
     setInterval(autoPilot, 500);
-    setInterval(autoShoot, 300);
+   // Remova o setInterval que causa o disparo automático
+// setInterval(autoShoot, 300); 
+
+// Adicione um ouvinte de eventos para a tecla Espaço
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        autoShoot(); // Chama a função apenas quando a tecla for pressionada
+    }
+});
 </script>
 </body>
 </html>
