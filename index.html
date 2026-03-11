@@ -100,7 +100,21 @@
     }
 
     setInterval(createAlien, 800);
-    setInterval(autoPilot, 500);
+    
+    // 1. Remova ou comente esta linha:
+// setInterval(autoPilot, 500);
+
+// 2. Adicione este ouvinte de eventos para controlar a nave com as setas
+document.addEventListener('keydown', (event) => {
+    const step = 20; // Velocidade de movimento
+    if (event.code === 'ArrowLeft' && shipX > 0) {
+        shipX -= step;
+    } else if (event.code === 'ArrowRight' && shipX < window.innerWidth - 50) {
+        shipX += step;
+    }
+    spaceship.style.left = shipX + 'px';
+});
+
    // Remova o setInterval que causa o disparo automático
 // setInterval(autoShoot, 300); 
 
