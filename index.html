@@ -4,11 +4,27 @@
   <meta charset="UTF-8">
   <title>Jogo de Estacionamento com Cadastro</title>
   <style>
-    body { margin: 0; background: #eee; font-family: Arial, sans-serif; }
-    canvas { display: none; margin: auto; background: #ccc; }
-    #formCadastro { text-align: center; margin-top: 50px; }
-    input { margin: 5px; padding: 8px; }
-    button { padding: 10px 20px; }
+    body { 
+      margin: 0; 
+      background: #eee; 
+      font-family: Arial, sans-serif; 
+    }
+    canvas { 
+      display: none; 
+      margin: auto; 
+      background: #d3d3d3; /* fundo cinza claro */
+    }
+    #formCadastro { 
+      text-align: center; 
+      margin-top: 50px; 
+    }
+    input { 
+      margin: 5px; 
+      padding: 8px; 
+    }
+    button { 
+      padding: 10px 20px; 
+    }
   </style>
 </head>
 <body>
@@ -68,10 +84,6 @@
         car.y < spot.y + spot.height &&
         car.y + car.height > spot.y
       ) {
-        // Fundo cinza claro
-        ctx.fillStyle = "#d3d3d3";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         // Texto centralizado com efeito LED
         ctx.font = "bold 60px Arial";
         ctx.textAlign = "center";
