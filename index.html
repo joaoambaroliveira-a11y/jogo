@@ -8,6 +8,10 @@
       margin: 0; 
       background: #eee; 
       font-family: Arial, sans-serif; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* centraliza verticalmente */
     }
     canvas { 
       display: none; 
@@ -16,16 +20,37 @@
     }
     #formCadastro { 
       text-align: center; 
-      margin-top: 50px; 
+      padding: 20px;
+      background: #111; /* fundo escuro para contraste */
+      border-radius: 10px;
+      box-shadow: 0 0 20px cyan; /* efeito LED azul */
+    }
+    #formCadastro h2 {
+      font-size: 32px;
+      color: blue;
+      text-shadow: 0 0 15px cyan; /* efeito neon */
     }
     input { 
-      margin: 5px; 
-      padding: 8px; 
-      width: 250px;
+      margin: 10px; 
+      padding: 12px; 
+      width: 280px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
     }
     button { 
-      padding: 10px 20px; 
-      margin-top: 10px;
+      padding: 12px 25px; 
+      margin-top: 15px;
+      font-size: 20px;
+      background: blue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 15px cyan; /* efeito LED no botão */
+    }
+    button:hover {
+      background: darkblue;
     }
   </style>
 </head>
