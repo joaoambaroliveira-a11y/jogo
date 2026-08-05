@@ -2,25 +2,48 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Jogo de Estacionamento</title>
+  <title>Jogo de Estacionamento com Cadastro</title>
   <style>
-    body { margin: 0; background: #eee; }
-    canvas { display: block; margin: auto; background: #ccc; }
+    body { margin: 0; background: #eee; font-family: Arial, sans-serif; }
+    canvas { display: none; margin: auto; background: #ccc; }
+    #formCadastro { text-align: center; margin-top: 50px; }
+    input { margin: 5px; padding: 8px; }
+    button { padding: 10px 20px; }
   </style>
 </head>
 <body>
+  <!-- Formulário de cadastro -->
+  <div id="formCadastro">
+    <h2>Cadastro de Cliente</h2>
+    <input type="text" id="nome" placeholder="Nome" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <button onclick="iniciarJogo()">Cadastrar e Jogar</button>
+  </div>
+
+  <!-- Canvas do jogo -->
   <canvas id="gameCanvas" width="500" height="500"></canvas>
+
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Carro
     const car = { x: 50, y: 400, width: 40, height: 70, color: "blue" };
-
-    // Vaga de estacionamento
     const spot = { x: 200, y: 100, width: 50, height: 80, color: "green" };
 
-    // Movimento
+    function iniciarJogo() {
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+
+      if (nome && email) {
+        document.getElementById("formCadastro").style.display = "none";
+        canvas.style.display = "block";
+        alert("Bem-vindo, " + nome + "! Boa sorte no estacionamento.");
+        gameLoop();
+      } else {
+        alert("Por favor, preencha todos os campos.");
+      }
+    }
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowUp") car.y -= 5;
       if (e.key === "ArrowDown") car.y += 5;
@@ -58,8 +81,6 @@
       checkWin();
       requestAnimationFrame(gameLoop);
     }
-
-    gameLoop();
   </script>
 </body>
 </html>
