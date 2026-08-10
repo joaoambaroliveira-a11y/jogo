@@ -2,315 +2,423 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🅿️ Estacionamento Simulator</title>
+  <title>Estacionamento com Ranking</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    h1 { text-align: center; margin-bottom: 10px; }
-    
-    .vagas-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-      padding: 15px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-    }
-    .vaga {
-      width: 100%;
-      aspect-ratio: 1;
+    body { 
+      margin: 0; 
+      background: #eee; 
+      font-family: Arial, sans-serif; 
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 1.1em;
-      font-weight: bold;
+      height: 100vh;
+    }
+    canvas { 
+      display: none; 
+      margin: 20px auto; 
+      background: #d3d3d3;
+    }
+    #formCadastro { 
+      text-align: center; 
+      padding: 20px;
+      background: #111;
       border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .vaga-livre {
-      background: #22c55e;
-      color: black;
-    }
-    .vaga-ocupada {
-      background: #ef4444;
+      box-shadow: 0 0 20px cyan;
       color: white;
     }
-    .vaga:hover {
-      transform: scale(1.08);
+    #formCadastro h2 {
+      font-size: 32px;
+      color: blue;
+      text-shadow: 0 0 15px cyan;
     }
-
-    .status {
-      text-align: center;
-      font-size: 1.4em;
-      margin: 15px 0;
-      padding: 12px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-    }
-
-    .veiculo-card {
-      background: rgba(255,255,255,0.12);
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border-left: 6px solid #3b82f6;
-    }
-    .modelo { font-size: 1.15em; font-weight: bold; color: #a5f3fc; }
-
-    input, select, button {
-      padding: 12px;
-      margin: 5px;
+    input, select { 
+      margin: 10px; 
+      padding: 12px; 
+      width: 280px;
+      font-size: 18px;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
     }
-    button {
-      background: #3b82f6;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #2563eb; }
-    .remover-btn { background: #ef4444; }
-
-    .log {
-      max-height: 250px;
-      overflow-y: auto;
-      background: rgba(0,0,0,0.4);
-      padding: 12px;
-      border-radius: 8px;
+    button { 
+      padding: 12px 25px; 
       margin-top: 15px;
+      font-size: 20px;
+      background: blue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 15px cyan;
+    }
+    button:hover {
+      background: darkblue;
+    }
+    #ranking {
+      margin-top: 20px;
+      width: 600px;
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    #ranking h3 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #ddd;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🅿️ Estacionamento Simulator</h1>
-    
-    <div class="status" id="status">
-      Vagas Totais: <strong>30</strong> | 
-      Ocupadas: <strong id="ocupadas">0</strong> | 
-      Sobrando: <strong id="sobrando">30</strong>
-    </div>
+  <!-- Formulário de cadastro -->
+  <div id="formCadastro">
+    <h2>Cadastro de Cliente e Veículo</h2>
+    <input type="text" id="nome" placeholder="Nome do motorista" required><br>
+    <input type="text" id="celular" placeholder="Número de celular" required><br>
+    <input type="text" id="modelo" placeholder="Modelo do veículo" required><br>
+    <input type="text" id="placa" placeholder="Placa do veículo" required><br>
+    <input type="text" id="cor" placeholder="Cor do veículo" required><br>
+    <select id="vaga">
+      <option value="0">Vaga 1</option>
+      <option value="1">Vaga 2</option>
+      <option value="2">Vaga 3</option>
+      <option value="3">Vaga 4</option>
+      <option value="4">Vaga 5</option>
+    </select><br>
+    <button onclick="cadastrarCliente()">Cadastrar</button>
+  </div>
 
-    <!-- Grid de vagas numeradas -->
-    <h2>Mapa das Vagas</h2>
-    <div class="vagas-grid" id="vagasGrid"></div>
+  <!-- Canvas do estacionamento -->
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
 
-    <div style="text-align: center; margin: 20px 0;">
-      <select id="modeloVeiculo" style="width: 240px;">
-        <option value="">Escolha o modelo</option>
-        <option value="Volkswagen Gol">Volkswagen Gol</option>
-        <option value="Fiat Uno">Fiat Uno</option>
-        <option value="Chevrolet Onix">Chevrolet Onix</option>
-        <option value="Hyundai HB20">Hyundai HB20</option>
-        <option value="Toyota Corolla">Toyota Corolla</option>
-        <option value="Honda Civic">Honda Civic</option>
-        <option value="Toyota Hilux">Toyota Hilux</option>
-        <option value="Chevrolet S10">Chevrolet S10</option>
-        <option value="Fiat Strada">Fiat Strada</option>
-        <option value="Renault Kwid">Renault Kwid</option>
-        <option value="Jeep Compass">Jeep Compass</option>
-        <option value="Volkswagen Polo">Volkswagen Polo</option>
-        <option value="Fiat Toro">Fiat Toro</option>
-      </select>
-      <button onclick="estacionarVeiculo()">🚗 Estacionar Veículo</button>
-    </div>
-
-    <div>
-      <input type="text" id="placaRemover" placeholder="Digite a placa para remover" style="width: 320px;">
-      <button onclick="removerVeiculo()">Remover Veículo</button>
-    </div>
-
-    <h2>🚘 Veículos Estacionados</h2>
-    <div id="listaVeiculos"></div>
-
-    <div class="log" id="log"></div>
+  <!-- Ranking dos cadastros -->
+  <div id="ranking" style="display:none;">
+    <h3>Ranking de Veículos Cadastrados</h3>
+    <table id="rankingTable">
+      <tr>
+        <th>#</th>
+        <th>Motorista</th>
+        <th>Celular</th>
+        <th>Modelo</th>
+        <th>Placa</th>
+        <th>Vaga</th>
+      </tr>
+    </table>
   </div>
 
   <script>
-    const vagasTotais = 30;
-    let veiculos = {};           // placa -> dados
-    let vagaOcupada = {};        // número da vaga -> placa
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-    function gerarCPF() {
-      let cpf = Array.from({length: 9}, () => Math.floor(Math.random() * 10));
-      let d1 = cpf.reduce((s, n, i) => s + n * (10 - i), 0) % 11;
-      d1 = d1 < 2 ? 0 : 11 - d1;
-      cpf.push(d1);
-      let d2 = cpf.reduce((s, n, i) => s + n * (11 - i), 0) % 11;
-      d2 = d2 < 2 ? 0 : 11 - d2;
-      cpf.push(d2);
-      return cpf.join('');
-    }
+    const spots = [
+      { x: 50, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 150, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 250, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 350, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 450, y: 50, width: 60, height: 100, ocupado: false, carro: null }
+    ];
 
-    function gerarRG() {
-      let rg = Array.from({length: 9}, () => Math.floor(Math.random() * 10)).join('');
-      return `${rg.slice(0,2)}.${rg.slice(2,5)}.${rg.slice(5,8)}-${rg[8]}`;
-    }
+    const rankingTable = document.getElementById("rankingTable");
 
-    function gerarPlaca() {
-      const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      let placa = '';
-      for (let i = 0; i < 3; i++) placa += letras[Math.floor(Math.random() * 26)];
-      placa += '-';
-      for (let i = 0; i < 4; i++) placa += Math.floor(Math.random() * 10);
-      return placa;
-    }
+    function cadastrarCliente() {
+      const nome = document.getElementById("nome").value;
+      const celular = document.getElementById("celular").value;
+      const modelo = document.getElementById("modelo").value;
+      const placa = document.getElementById("placa").value;
+      const cor = document.getElementById("cor").value;
+      const vagaIndex = document.getElementById("vaga").value;
 
-    function adicionarLog(mensagem, tipo = 'info') {
-      const log = document.getElementById('log');
-      const hora = new Date().toLocaleTimeString('pt-BR');
-      const cor = tipo === 'sucesso' ? '#4ade80' : tipo === 'erro' ? '#f87171' : 'white';
-      log.innerHTML += `<span style="color:${cor}">[${hora}] ${mensagem}</span><br>`;
-      log.scrollTop = log.scrollHeight;
-    }
+      if (nome && celular && modelo && placa && cor) {
+        document.getElementById("formCadastro").style.display = "none";
+        canvas.style.display = "block";
+        document.getElementById("ranking").style.display = "block";
 
-    function atualizarStatus() {
-      const ocupadas = Object.keys(veiculos).length;
-      document.getElementById('ocupadas').textContent = ocupadas;
-      document.getElementById('sobrando').textContent = vagasTotais - ocupadas;
-    }
+        const vaga = spots[vagaIndex];
+        if (!vaga.ocupado) {
+          vaga.ocupado = true;
+          vaga.carro = { modelo, placa, cor, motorista: nome, celular };
+          alert("Cliente " + nome + " estacionou na vaga " + (parseInt(vagaIndex)+1));
 
-    function renderizarVagas() {
-      const grid = document.getElementById('vagasGrid');
-      grid.innerHTML = '';
-
-      for (let i = 1; i <= vagasTotais; i++) {
-        const vagaDiv = document.createElement('div');
-        vagaDiv.className = `vaga ${vagaOcupada[i] ? 'vaga-ocupada' : 'vaga-livre'}`;
-        vagaDiv.textContent = i;
-        
-        // Mostra placa ao passar o mouse
-        if (vagaOcupada[i]) {
-          const placa = vagaOcupada[i];
-          vagaDiv.title = `Ocupada por: ${placa}`;
+          // Atualiza ranking
+          const row = rankingTable.insertRow();
+          row.insertCell(0).innerText = rankingTable.rows.length - 1;
+          row.insertCell(1).innerText = nome;
+          row.insertCell(2).innerText = celular;
+          row.insertCell(3).innerText = modelo;
+          row.insertCell(4).innerText = placa;
+          row.insertCell(5).innerText = "Vaga " + (parseInt(vagaIndex)+1);
         } else {
-          vagaDiv.title = `Vaga ${i} - Livre`;
+          alert("Essa vaga já está ocupada!");
         }
-        
-        grid.appendChild(vagaDiv);
+
+        desenharEstacionamento();
+      } else {
+        alert("Por favor, preencha todos os campos.");
       }
     }
 
-    function encontrarVagaLivre() {
-      for (let i = 1; i <= vagasTotais; i++) {
-        if (!vagaOcupada[i]) return i;
+    function desenharEstacionamento() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const vagasLivres = spots.filter(s => !s.ocupado).length;
+      const vagasOcupadas = spots.filter(s => s.ocupado).length;
+      ctx.fillStyle = "black";
+      ctx.font = "16px Arial";
+      ctx.fillText("Vagas livres: " + vagasLivres, 20, 20);
+      ctx.fillText("Vagas ocupadas: " + vagasOcupadas, 20, 40);
+
+      spots.forEach((s, i) => {
+        ctx.strokeStyle = s.ocupado ? "red" : "green";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(s.x, s.y, s.width, s.height);
+
+        if (s.ocupado && s.carro) {
+          ctx.fillStyle = s.carro.cor;
+          ctx.fillRect(s.x + 10, s.y + 20, 40, 60);
+
+          ctx.fillStyle = "lightblue";
+          ctx.fillRect(s.x + 12, s.y + 22, 36, 20);
+
+          ctx.fillStyle = "yellow";
+          ctx.beginPath();
+          ctx.arc(s.x + 15, s.y + 20, 5, 0, Math.PI * 2);
+          ctx.arc(s.x + 45, s.y + 20, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "black";
+          ctx.beginPath();
+          ctx.arc(s.x + 15, s.y + 75, 6, 0, Math.PI * 2);
+          ctx.arc(s.x + 45, s.y + 75, 6, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "black";
+          ctx.font = "12px Arial";
+          ctx.fillText(s.carro.placa, s.x + 5, s.y + s.height + 15);
+          ctx.fillText(s.carro.modelo, s.x + 5, s.y + s.height + 30);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Estacionamento com Ranking</title>
+  <style>
+    body { 
+      margin: 0; 
+      background: #eee; 
+      font-family: Arial, sans-serif; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas { 
+      display: none; 
+      margin: 20px auto; 
+      background: #d3d3d3;
+    }
+    #formCadastro { 
+      text-align: center; 
+      padding: 20px;
+      background: #111;
+      border-radius: 10px;
+      box-shadow: 0 0 20px cyan;
+      color: white;
+    }
+    #formCadastro h2 {
+      font-size: 32px;
+      color: blue;
+      text-shadow: 0 0 15px cyan;
+    }
+    input, select { 
+      margin: 10px; 
+      padding: 12px; 
+      width: 280px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+    }
+    button { 
+      padding: 12px 25px; 
+      margin-top: 15px;
+      font-size: 20px;
+      background: blue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 15px cyan;
+    }
+    button:hover {
+      background: darkblue;
+    }
+    #ranking {
+      margin-top: 20px;
+      width: 600px;
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    #ranking h3 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <!-- Formulário de cadastro -->
+  <div id="formCadastro">
+    <h2>Cadastro de Cliente e Veículo</h2>
+    <input type="text" id="nome" placeholder="Nome do motorista" required><br>
+    <input type="text" id="celular" placeholder="Número de celular" required><br>
+    <input type="text" id="modelo" placeholder="Modelo do veículo" required><br>
+    <input type="text" id="placa" placeholder="Placa do veículo" required><br>
+    <input type="text" id="cor" placeholder="Cor do veículo" required><br>
+    <select id="vaga">
+      <option value="0">Vaga 1</option>
+      <option value="1">Vaga 2</option>
+      <option value="2">Vaga 3</option>
+      <option value="3">Vaga 4</option>
+      <option value="4">Vaga 5</option>
+    </select><br>
+    <button onclick="cadastrarCliente()">Cadastrar</button>
+  </div>
+
+  <!-- Canvas do estacionamento -->
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+  <!-- Ranking dos cadastros -->
+  <div id="ranking" style="display:none;">
+    <h3>Ranking de Veículos Cadastrados</h3>
+    <table id="rankingTable">
+      <tr>
+        <th>#</th>
+        <th>Motorista</th>
+        <th>Celular</th>
+        <th>Modelo</th>
+        <th>Placa</th>
+        <th>Vaga</th>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const spots = [
+      { x: 50, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 150, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 250, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 350, y: 50, width: 60, height: 100, ocupado: false, carro: null },
+      { x: 450, y: 50, width: 60, height: 100, ocupado: false, carro: null }
+    ];
+
+    const rankingTable = document.getElementById("rankingTable");
+
+    function cadastrarCliente() {
+      const nome = document.getElementById("nome").value;
+      const celular = document.getElementById("celular").value;
+      const modelo = document.getElementById("modelo").value;
+      const placa = document.getElementById("placa").value;
+      const cor = document.getElementById("cor").value;
+      const vagaIndex = document.getElementById("vaga").value;
+
+      if (nome && celular && modelo && placa && cor) {
+        document.getElementById("formCadastro").style.display = "none";
+        canvas.style.display = "block";
+        document.getElementById("ranking").style.display = "block";
+
+        const vaga = spots[vagaIndex];
+        if (!vaga.ocupado) {
+          vaga.ocupado = true;
+          vaga.carro = { modelo, placa, cor, motorista: nome, celular };
+          alert("Cliente " + nome + " estacionou na vaga " + (parseInt(vagaIndex)+1));
+
+          // Atualiza ranking
+          const row = rankingTable.insertRow();
+          row.insertCell(0).innerText = rankingTable.rows.length - 1;
+          row.insertCell(1).innerText = nome;
+          row.insertCell(2).innerText = celular;
+          row.insertCell(3).innerText = modelo;
+          row.insertCell(4).innerText = placa;
+          row.insertCell(5).innerText = "Vaga " + (parseInt(vagaIndex)+1);
+        } else {
+          alert("Essa vaga já está ocupada!");
+        }
+
+        desenharEstacionamento();
+      } else {
+        alert("Por favor, preencha todos os campos.");
       }
-      return null;
     }
 
-    function estacionarVeiculo() {
-      if (Object.keys(veiculos).length >= vagasTotais) {
-        adicionarLog("❌ Estacionamento lotado!", "erro");
-        return;
-      }
+    function desenharEstacionamento() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const vaga = encontrarVagaLivre();
-      if (!vaga) return;
+      const vagasLivres = spots.filter(s => !s.ocupado).length;
+      const vagasOcupadas = spots.filter(s => s.ocupado).length;
+      ctx.fillStyle = "black";
+      ctx.font = "16px Arial";
+      ctx.fillText("Vagas livres: " + vagasLivres, 20, 20);
+      ctx.fillText("Vagas ocupadas: " + vagasOcupadas, 20, 40);
 
-      const select = document.getElementById('modeloVeiculo');
-      let modelo = select.value || ["Volkswagen Gol", "Chevrolet Onix", "Hyundai HB20", "Toyota Corolla"][Math.floor(Math.random()*4)];
+      spots.forEach((s, i) => {
+        ctx.strokeStyle = s.ocupado ? "red" : "green";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(s.x, s.y, s.width, s.height);
 
-      const placa = gerarPlaca();
-      const veiculo = {
-        placa: placa,
-        vaga: vaga,
-        modelo: modelo,
-        cpf: gerarCPF(),
-        rg: gerarRG(),
-        entrada: new Date().toLocaleTimeString('pt-BR')
-      };
+        if (s.ocupado && s.carro) {
+          ctx.fillStyle = s.carro.cor;
+          ctx.fillRect(s.x + 10, s.y + 20, 40, 60);
 
-      veiculos[placa] = veiculo;
-      vagaOcupada[vaga] = placa;
+          ctx.fillStyle = "lightblue";
+          ctx.fillRect(s.x + 12, s.y + 22, 36, 20);
 
-      atualizarStatus();
-      renderizarVagas();
-      mostrarVeiculos();
-      
-      adicionarLog(`✅ Veículo estacionado na <strong>Vaga ${vaga}</strong> — ${modelo} (${placa})`, "sucesso");
-      select.value = '';
+          ctx.fillStyle = "yellow";
+          ctx.beginPath();
+          ctx.arc(s.x + 15, s.y + 20, 5, 0, Math.PI * 2);
+          ctx.arc(s.x + 45, s.y + 20, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "black";
+          ctx.beginPath();
+          ctx.arc(s.x + 15, s.y + 75, 6, 0, Math.PI * 2);
+          ctx.arc(s.x + 45, s.y + 75, 6, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "black";
+          ctx.font = "12px Arial";
+          ctx.fillText(s.carro.placa, s.x + 5, s.y + s.height + 15);
+          ctx.fillText(s.carro.modelo, s.x + 5, s.y + s.height + 30);
+        }
+      });
     }
-
-    function removerVeiculo() {
-      const placaInput = document.getElementById('placaRemover').value.trim().toUpperCase();
-      if (!placaInput || !veiculos[placaInput]) {
-        adicionarLog("❌ Placa não encontrada!", "erro");
-        return;
-      }
-
-      const veiculo = veiculos[placaInput];
-      delete veiculos[placaInput];
-      delete vagaOcupada[veiculo.vaga];
-
-      atualizarStatus();
-      renderizarVagas();
-      mostrarVeiculos();
-      
-      adicionarLog(`🚪 Veículo removido da Vaga ${veiculo.vaga} — ${veiculo.modelo}`, "sucesso");
-      document.getElementById('placaRemover').value = '';
-    }
-
-    function removerPorPlaca(placa) {
-      if (veiculos[placa]) removerVeiculoComPlaca(placa);
-    }
-
-    function removerVeiculoComPlaca(placa) {
-      const veiculo = veiculos[placa];
-      delete veiculos[placa];
-      delete vagaOcupada[veiculo.vaga];
-
-      atualizarStatus();
-      renderizarVagas();
-      mostrarVeiculos();
-      adicionarLog(`🚪 Removido da Vaga ${veiculo.vaga} — ${veiculo.modelo}`, "sucesso");
-    }
-
-    function mostrarVeiculos() {
-      const lista = document.getElementById('listaVeiculos');
-      lista.innerHTML = '';
-
-      if (Object.keys(veiculos).length === 0) {
-        lista.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhum veículo estacionado.</p>';
-        return;
-      }
-
-      for (let placa in veiculos) {
-        const v = veiculos[placa];
-        const card = document.createElement('div');
-        card.className = 'veiculo-card';
-        card.innerHTML = `
-          <strong>Vaga ${v.vaga}</strong> — <strong style="font-size:1.2em;">${v.placa}</strong><br>
-          <span class="modelo">${v.modelo}</span><br><br>
-          CPF: ${v.cpf} | RG: ${v.rg}<br>
-          Entrada: ${v.entrada}
-          <button class="remover-btn" onclick="removerPorPlaca('${placa}')" style="float:right;">Remover</button>
-        `;
-        lista.appendChild(card);
-      }
-    }
-
-    // Inicialização
-    atualizarStatus();
-    renderizarVagas();
-    mostrarVeiculos();
-    adicionarLog("🚀 Bem-vindo! As vagas estão numeradas de 1 a 30.", "sucesso");
   </script>
 </body>
 </html>
