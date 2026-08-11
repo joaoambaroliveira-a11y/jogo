@@ -20,12 +20,52 @@
       padding: 25px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    h1 { text-align: center; margin-bottom: 10px; }
-    
-    .tabs {
+
+    /* Tela de Login */
+    #loginScreen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.95);
       display: flex;
-      margin-bottom: 15px;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
+    .login-box {
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .login-box h2 { margin-bottom: 25px; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    input::placeholder { color: #cbd5e1; }
+
+    button {
+      padding: 12px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #2563eb; }
+
+    /* Resto do estilo (mesmo de antes) */
+    .tabs { display: flex; margin-bottom: 15px; }
     .tab {
       padding: 12px 20px;
       background: rgba(255,255,255,0.1);
@@ -34,9 +74,7 @@
       cursor: pointer;
       font-weight: bold;
     }
-    .tab.active {
-      background: #3b82f6;
-    }
+    .tab.active { background: #3b82f6; }
 
     .vagas-grid {
       display: grid;
@@ -56,12 +94,8 @@
       font-size: 1.1em;
       font-weight: bold;
       border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
     }
-    .vaga-livre { background: #22c55e; color: black; }
     .vaga-ocupada { background: #ef4444; color: white; }
-    .vaga:hover { transform: scale(1.08); }
 
     .status { text-align: center; font-size: 1.4em; margin: 15px 0; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; }
 
@@ -74,21 +108,6 @@
     }
     .modelo { font-size: 1.15em; font-weight: bold; color: #a5f3fc; }
 
-    input, select, button {
-      padding: 12px;
-      margin: 5px;
-      border: none;
-      border-radius: 6px;
-    }
-    button {
-      background: #3b82f6;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #2563eb; }
-    .remover-btn { background: #ef4444; }
-
     .log {
       max-height: 250px;
       overflow-y: auto;
@@ -100,71 +119,89 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🅿️ Estacionamento Simulator</h1>
-    
-    <div class="tabs">
-      <div class="tab active" onclick="showTab(0)">📋 Cadastrar Cliente</div>
-      <div class="tab" onclick="showTab(1)">🅿️ Estacionamento</div>
+
+  <!-- TELA DE LOGIN -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>🔐 Acesso ao Estacionamento</h2>
+      <input type="text" id="username" placeholder="Usuário" value="admin"><br>
+      <input type="password" id="password" placeholder="Senha" value="1234"><br>
+      <button onclick="fazerLogin()">Entrar</button>
+      <p style="margin-top: 20px; font-size: 0.9em; color: #94a3b8;">
+        Usuário: <strong>admin</strong><br>
+        Senha: <strong>1234</strong>
+      </p>
     </div>
+  </div>
 
-    <!-- ==================== ABA CADASTRO (PRIMEIRA) ==================== -->
-    <div id="tab0">
-      <h2>📋 Cadastro de Clientes</h2>
-      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
-        <input type="text" id="cadNome" placeholder="Nome Completo" style="width: 280px;"><br>
-        <input type="text" id="cadCPF" placeholder="CPF" maxlength="11" style="width: 200px;">
-        <input type="text" id="cadRG" placeholder="RG" style="width: 180px;"><br>
-        <input type="text" id="cadTelefone" placeholder="Telefone (opcional)" style="width: 200px;">
-        <button onclick="cadastrarCliente()">Cadastrar Cliente</button>
+  <!-- CONTEÚDO PRINCIPAL (escondido até login) -->
+  <div id="mainContent" style="display: none;">
+    <div class="container">
+      <h1>🅿️ Estacionamento Simulator</h1>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="showTab(0)">📋 Cadastrar Cliente</div>
+        <div class="tab" onclick="showTab(1)">🅿️ Estacionamento</div>
       </div>
 
-      <h3>Clientes Cadastrados</h3>
-      <div id="listaClientes"></div>
+      <!-- ABA CADASTRO -->
+      <div id="tab0">
+        <h2>📋 Cadastro de Clientes</h2>
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+          <input type="text" id="cadNome" placeholder="Nome Completo" style="width: 280px;"><br>
+          <input type="text" id="cadCPF" placeholder="CPF" maxlength="11" style="width: 200px;">
+          <input type="text" id="cadRG" placeholder="RG" style="width: 180px;"><br>
+          <input type="text" id="cadTelefone" placeholder="Telefone (opcional)" style="width: 200px;">
+          <button onclick="cadastrarCliente()">Cadastrar Cliente</button>
+        </div>
+
+        <h3>Clientes Cadastrados</h3>
+        <div id="listaClientes"></div>
+      </div>
+
+      <!-- ABA ESTACIONAMENTO -->
+      <div id="tab1" style="display: none;">
+        <div class="status" id="status">
+          Vagas Totais: <strong>30</strong> | 
+          Ocupadas: <strong id="ocupadas">0</strong> | 
+          Sobrando: <strong id="sobrando">30</strong>
+        </div>
+
+        <h2>🚗 Vagas Ocupadas</h2>
+        <div class="vagas-grid" id="vagasGrid"></div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
+          <h3>Estacionar Novo Veículo</h3>
+          <select id="clienteSelect" style="width: 320px;" onchange="preencherDadosCliente()">
+            <option value="">Novo Cliente</option>
+          </select><br>
+          
+          <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width: 280px;">
+          <select id="modeloVeiculo" style="width: 240px;">
+            <option value="">Escolha o modelo</option>
+            <option value="Volkswagen Gol">Volkswagen Gol</option>
+            <option value="Fiat Uno">Fiat Uno</option>
+            <option value="Chevrolet Onix">Chevrolet Onix</option>
+            <option value="Hyundai HB20">Hyundai HB20</option>
+            <option value="Toyota Corolla">Toyota Corolla</option>
+            <option value="Honda Civic">Honda Civic</option>
+            <option value="Toyota Hilux">Toyota Hilux</option>
+            <option value="Chevrolet S10">Chevrolet S10</option>
+          </select>
+          <button onclick="estacionarVeiculo()">Estacionar Veículo</button>
+        </div>
+
+        <div>
+          <input type="text" id="placaRemover" placeholder="Digite a placa para remover" style="width: 320px;">
+          <button onclick="removerVeiculo()">Remover Veículo</button>
+        </div>
+
+        <h2>🚘 Veículos Estacionados</h2>
+        <div id="listaVeiculos"></div>
+      </div>
+
+      <div class="log" id="log"></div>
     </div>
-
-    <!-- ==================== ABA ESTACIONAMENTO ==================== -->
-    <div id="tab1" style="display: none;">
-      <div class="status" id="status">
-        Vagas Totais: <strong>30</strong> | 
-        Ocupadas: <strong id="ocupadas">0</strong> | 
-        Sobrando: <strong id="sobrando">30</strong>
-      </div>
-
-      <h2>Mapa das Vagas (1 a 30)</h2>
-      <div class="vagas-grid" id="vagasGrid"></div>
-
-      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
-        <h3>🚗 Estacionar Veículo</h3>
-        <select id="clienteSelect" style="width: 320px;" onchange="preencherDadosCliente()">
-          <option value="">Novo Cliente</option>
-        </select><br>
-        
-        <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width: 280px;">
-        <select id="modeloVeiculo" style="width: 240px;">
-          <option value="">Escolha o modelo</option>
-          <option value="Volkswagen Gol">Volkswagen Gol</option>
-          <option value="Fiat Uno">Fiat Uno</option>
-          <option value="Chevrolet Onix">Chevrolet Onix</option>
-          <option value="Hyundai HB20">Hyundai HB20</option>
-          <option value="Toyota Corolla">Toyota Corolla</option>
-          <option value="Honda Civic">Honda Civic</option>
-          <option value="Toyota Hilux">Toyota Hilux</option>
-          <option value="Chevrolet S10">Chevrolet S10</option>
-        </select>
-        <button onclick="estacionarVeiculo()">Estacionar Veículo</button>
-      </div>
-
-      <div>
-        <input type="text" id="placaRemover" placeholder="Digite a placa para remover" style="width: 320px;">
-        <button onclick="removerVeiculo()">Remover Veículo</button>
-      </div>
-
-      <h2>🚘 Veículos Estacionados</h2>
-      <div id="listaVeiculos"></div>
-    </div>
-
-    <div class="log" id="log"></div>
   </div>
 
   <script>
@@ -173,17 +210,21 @@
     let vagaOcupada = {};
     let clientes = [];
 
-    function gerarCPF() {
-      let cpf = Array.from({length: 9}, () => Math.floor(Math.random() * 10));
-      let d1 = cpf.reduce((s, n, i) => s + n * (10 - i), 0) % 11;
-      d1 = d1 < 2 ? 0 : 11 - d1;
-      cpf.push(d1);
-      let d2 = cpf.reduce((s, n, i) => s + n * (11 - i), 0) % 11;
-      d2 = d2 < 2 ? 0 : 11 - d2;
-      cpf.push(d2);
-      return cpf.join('');
+    // ==================== LOGIN ====================
+    function fazerLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === "admin" && password === "1234") {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        adicionarLog("✅ Login realizado com sucesso! Bem-vindo ao sistema.", "sucesso");
+      } else {
+        alert("Usuário ou senha incorretos!\n\nDica: admin / 1234");
+      }
     }
 
+    // ==================== RESTO DO CÓDIGO (mesmo de antes) ====================
     function gerarPlaca() {
       const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let placa = '';
@@ -214,12 +255,19 @@
     function renderizarVagas() {
       const grid = document.getElementById('vagasGrid');
       grid.innerHTML = '';
+      let temOcupada = false;
       for (let i = 1; i <= vagasTotais; i++) {
-        const vagaDiv = document.createElement('div');
-        vagaDiv.className = `vaga ${vagaOcupada[i] ? 'vaga-ocupada' : 'vaga-livre'}`;
-        vagaDiv.textContent = i;
-        if (vagaOcupada[i]) vagaDiv.title = `Ocupada - ${vagaOcupada[i]}`;
-        grid.appendChild(vagaDiv);
+        if (vagaOcupada[i]) {
+          temOcupada = true;
+          const vagaDiv = document.createElement('div');
+          vagaDiv.className = 'vaga vaga-ocupada';
+          vagaDiv.textContent = i;
+          vagaDiv.title = `Vaga ${i} - ${vagaOcupada[i]}`;
+          grid.appendChild(vagaDiv);
+        }
+      }
+      if (!temOcupada) {
+        grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #aaa; padding: 20px;">Nenhuma vaga ocupada no momento.</p>';
       }
     }
 
@@ -230,45 +278,30 @@
       return null;
     }
 
-    // ==================== CADASTRO DE CLIENTES ====================
     function cadastrarCliente() {
       const nome = document.getElementById('cadNome').value.trim();
       const cpf = document.getElementById('cadCPF').value.trim();
-      const rg = document.getElementById('cadRG').value.trim();
-      const telefone = document.getElementById('cadTelefone').value.trim();
-
       if (!nome || !cpf) {
         adicionarLog("⚠️ Nome e CPF são obrigatórios!", "erro");
         return;
       }
-
-      clientes.push({ nome, cpf, rg, telefone });
+      clientes.push({ nome, cpf, rg: document.getElementById('cadRG').value.trim(), telefone: document.getElementById('cadTelefone').value.trim() });
       atualizarListaClientes();
       atualizarSelectClientes();
-
       document.getElementById('cadNome').value = '';
       document.getElementById('cadCPF').value = '';
       document.getElementById('cadRG').value = '';
       document.getElementById('cadTelefone').value = '';
-
-      adicionarLog(`✅ Cliente <strong>${nome}</strong> cadastrado com sucesso!`, "sucesso");
+      adicionarLog(`✅ Cliente <strong>${nome}</strong> cadastrado!`, "sucesso");
     }
 
     function atualizarListaClientes() {
       const lista = document.getElementById('listaClientes');
-      lista.innerHTML = '';
-      if (clientes.length === 0) {
-        lista.innerHTML = '<p style="color:#aaa;">Nenhum cliente cadastrado ainda.</p>';
-        return;
-      }
-      clientes.forEach((c) => {
+      lista.innerHTML = clientes.length === 0 ? '<p style="color:#aaa;">Nenhum cliente cadastrado ainda.</p>' : '';
+      clientes.forEach(c => {
         const div = document.createElement('div');
         div.className = 'veiculo-card';
-        div.innerHTML = `
-          <strong>${c.nome}</strong><br>
-          CPF: ${c.cpf} | RG: ${c.rg || 'Não informado'}<br>
-          Telefone: ${c.telefone || 'Não informado'}
-        `;
+        div.innerHTML = `<strong>${c.nome}</strong><br>CPF: ${c.cpf} | RG: ${c.rg || 'Não informado'}<br>Telefone: ${c.telefone || 'Não informado'}`;
         lista.appendChild(div);
       });
     }
@@ -287,85 +320,62 @@
     function preencherDadosCliente() {
       const select = document.getElementById('clienteSelect');
       if (select.value === "") return;
-      const cliente = clientes[select.value];
-      document.getElementById('nomePessoa').value = cliente.nome;
+      document.getElementById('nomePessoa').value = clientes[select.value].nome;
     }
 
-    // ==================== ESTACIONAMENTO ====================
     function estacionarVeiculo() {
       if (Object.keys(veiculos).length >= vagasTotais) {
         adicionarLog("❌ Estacionamento lotado!", "erro");
         return;
       }
-
       const nome = document.getElementById('nomePessoa').value.trim();
       if (!nome) {
         adicionarLog("⚠️ Digite o nome do proprietário!", "erro");
         return;
       }
-
       const vaga = encontrarVagaLivre();
-      const selectModelo = document.getElementById('modeloVeiculo');
-      let modelo = selectModelo.value || "Veículo Genérico";
-
+      const modelo = document.getElementById('modeloVeiculo').value || "Veículo Genérico";
       const placa = gerarPlaca();
-      const veiculo = {
-        placa: placa,
-        vaga: vaga,
-        nome: nome,
-        modelo: modelo,
-        cpf: gerarCPF(),
-        entrada: formatarHora(),
-        saida: null
-      };
 
-      veiculos[placa] = veiculo;
+      veiculos[placa] = { placa, vaga, nome, modelo, entrada: formatarHora(), saida: null };
       vagaOcupada[vaga] = placa;
 
       atualizarStatus();
       renderizarVagas();
       mostrarVeiculos();
-      
       adicionarLog(`✅ <strong>${nome}</strong> estacionou na Vaga ${vaga} — ${modelo} (${placa})`, "sucesso");
 
       document.getElementById('nomePessoa').value = '';
       document.getElementById('clienteSelect').value = '';
-      selectModelo.value = '';
+      document.getElementById('modeloVeiculo').value = '';
     }
 
     function removerPorPlaca(placa) {
       const veiculo = veiculos[placa];
       if (!veiculo) return;
-
       veiculo.saida = formatarHora();
       delete veiculos[placa];
       delete vagaOcupada[veiculo.vaga];
-
       atualizarStatus();
       renderizarVagas();
       mostrarVeiculos();
-      
       adicionarLog(`🚪 <strong>${veiculo.nome}</strong> saiu da Vaga ${veiculo.vaga} às ${veiculo.saida}`, "sucesso");
     }
 
     function removerVeiculo() {
-      const placaInput = document.getElementById('placaRemover').value.trim().toUpperCase();
-      if (!placaInput || !veiculos[placaInput]) {
+      const placa = document.getElementById('placaRemover').value.trim().toUpperCase();
+      if (!placa || !veiculos[placa]) {
         adicionarLog("❌ Placa não encontrada!", "erro");
         return;
       }
-      removerPorPlaca(placaInput);
+      removerPorPlaca(placa);
       document.getElementById('placaRemover').value = '';
     }
 
     function mostrarVeiculos() {
       const lista = document.getElementById('listaVeiculos');
-      lista.innerHTML = '';
-
-      if (Object.keys(veiculos).length === 0) {
-        lista.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhum veículo estacionado.</p>';
-        return;
-      }
+      lista.innerHTML = Object.keys(veiculos).length === 0 ? 
+        '<p style="text-align:center; color:#aaa;">Nenhum veículo estacionado.</p>' : '';
 
       for (let placa in veiculos) {
         const v = veiculos[placa];
@@ -376,7 +386,7 @@
           <strong style="color:#67e8f9;">${v.nome}</strong><br>
           <span class="modelo">${v.modelo}</span><br><br>
           Entrada: ${v.entrada} ${v.saida ? `<br><strong>Saída:</strong> ${v.saida}` : ''}
-          <button class="remover-btn" onclick="removerPorPlaca('${placa}')" style="float:right;">Registrar Saída</button>
+          <button class="remover-btn" onclick="removerPorPlaca('${placa}')" style="float:right; background:#ef4444; padding:8px 12px;">Registrar Saída</button>
         `;
         lista.appendChild(card);
       }
@@ -385,18 +395,14 @@
     function showTab(n) {
       document.getElementById('tab0').style.display = n === 0 ? 'block' : 'none';
       document.getElementById('tab1').style.display = n === 1 ? 'block' : 'none';
-      
-      document.querySelectorAll('.tab').forEach((t, i) => {
-        t.classList.toggle('active', i === n);
-      });
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n));
     }
 
-    // Inicialização - Abre na aba de Cadastro
+    // Inicialização
     atualizarStatus();
     renderizarVagas();
     mostrarVeiculos();
     atualizarListaClientes();
-    adicionarLog("🚀 Bem-vindo! Comece cadastrando os clientes na primeira aba.", "sucesso");
   </script>
 </body>
 </html>
