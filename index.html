@@ -34,35 +34,48 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .form-veiculo {
-      background: rgba(0,0,0,0.4);
-      padding: 30px;
-      border-radius: 15px;
-      margin: 20px 0;
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
     }
-    .form-veiculo input, .form-veiculo select {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border-radius: 10px;
+    .modal-content {
       background: #1e2937;
-      color: white;
-      border: 1px solid #60a5fa;
-      font-size: 1.05em;
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-align: center;
+      border: 3px solid #60a5fa;
+      max-width: 520px;
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.7);
+    }
+    .modal-content h2 {
+      color: #60a5fa;
+      margin-bottom: 10px;
+      font-size: 1.8em;
+    }
+    .modal-content p {
+      margin-bottom: 25px;
+      font-size: 1.1em;
     }
 
-    button.big-btn {
+    .payment-option {
       width: 100%;
-      padding: 20px;
-      font-size: 1.5em;
-      background: linear-gradient(90deg, #3b82f6, #60a5fa);
-      color: white;
+      padding: 18px;
+      margin: 12px 0;
+      font-size: 1.3em;
+      font-weight: bold;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
-      margin-top: 15px;
+      transition: all 0.3s;
+    }
+    .payment-option:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
     }
 
     .ticket {
@@ -88,51 +101,37 @@
     </div>
   </div>
 
+  <!-- MODAL DE PAGAMENTO MELHORADO -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <h2>💰 PAGAMENTO OBRIGATÓRIO</h2>
+      <p id="modalVeiculoInfo" style="margin-bottom:25px;font-size:1.2em;"></p>
+      
+      <button class="payment-option" style="background:#22c55e;color:white;" onclick="confirmarPagamento('Dinheiro')">💵 DINHEIRO</button>
+      <button class="payment-option" style="background:#3b82f6;color:white;" onclick="confirmarPagamento('Débito')">💳 DÉBITO</button>
+      <button class="payment-option" style="background:#8b5cf6;color:white;" onclick="confirmarPagamento('Crédito')">💳 CRÉDITO</button>
+      <button class="payment-option" style="background:#06b67f;color:white;" onclick="confirmarPagamento('PIX')">📱 PIX</button>
+      
+      <button onclick="fecharModal()" style="margin-top:20px;background:#ef4444;color:white;padding:12px 40px;border:none;border-radius:8px;font-size:1.1em;">Cancelar</button>
+    </div>
+  </div>
+
   <div id="mainContent" style="display:none;">
     <div class="container">
       <h1>🅿️ ESTACIONAMENTO</h1>
 
-      <!-- TABELA DE PREÇOS -->
-      <div class="tabela-precos" style="background:rgba(0,0,0,0.5);padding:20px;border-radius:12px;margin:20px 0;text-align:center;">
-        <h3>📋 Tabela de Valores</h3>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><th>Tempo</th><th>Valor</th></tr>
-          <tr><td>Até 1 hora</td><td><strong>R$ 12,00</strong></td></tr>
-          <tr><td>Até 2 horas</td><td><strong>R$ 20,00</strong></td></tr>
-          <tr><td>Acima de 7 horas</td><td><strong>R$ 50,00</strong></td></tr>
-        </table>
-      </div>
-
-      <!-- DADOS DO VEÍCULO MELHORADO -->
-      <div class="form-veiculo">
+      <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
         <h3>🚗 Dados do Veículo</h3>
-        
-        <input type="text" id="nomePessoa" placeholder="Nome do Cliente / Proprietário">
-        
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
-          <select id="modeloVeiculo">
-            <option value="">Modelo do Carro</option>
-            <option value="Volkswagen Gol">Volkswagen Gol</option>
-            <option value="Chevrolet Onix">Chevrolet Onix</option>
-            <option value="Hyundai HB20">Hyundai HB20</option>
-            <option value="Toyota Corolla">Toyota Corolla</option>
-            <option value="Honda Civic">Honda Civic</option>
-            <option value="Toyota Hilux">Toyota Hilux</option>
-            <option value="Fiat Strada">Fiat Strada</option>
-          </select>
-          
-          <input type="text" id="placaInput" placeholder="Placa do Veículo" style="text-transform:uppercase;">
-        </div>
-
-        <select id="corVeiculo" style="margin-top:10px;">
-          <option value="">Cor do Veículo</option>
-          <option value="Branco">Branco</option>
-          <option value="Preto">Preto</option>
-          <option value="Prata">Prata</option>
-          <option value="Vermelho">Vermelho</option>
-          <option value="Azul">Azul</option>
-          <option value="Cinza">Cinza</option>
+        <input type="text" id="nomePessoa" placeholder="Nome do Cliente">
+        <select id="modeloVeiculo">
+          <option value="">Modelo do Carro</option>
+          <option value="Volkswagen Gol">Volkswagen Gol</option>
+          <option value="Chevrolet Onix">Chevrolet Onix</option>
+          <option value="Hyundai HB20">Hyundai HB20</option>
+          <option value="Toyota Corolla">Toyota Corolla</option>
+          <option value="Honda Civic">Honda Civic</option>
         </select>
+        <input type="text" id="placaInput" placeholder="Placa (opcional)">
 
         <button onclick="estacionarVeiculo()" class="big-btn">
           🚗 ESTACIONAR + GERAR TICKET
@@ -147,6 +146,7 @@
   <script>
     let veiculos = {};
     let vagaOcupada = {};
+    let veiculoParaPagar = null;
     const vagasTotais = 30;
 
     function fazerLogin() {
@@ -166,29 +166,75 @@
       return placa;
     }
 
-    function mostrarTicket(veiculo) {
-      const ticketHTML = `
+    function calcularValor(entrada) {
+      const agora = new Date();
+      const [h, m] = entrada.split(':').map(Number);
+      const entradaDate = new Date();
+      entradaDate.setHours(h, m);
+      let horas = (agora - entradaDate) / (1000 * 60 * 60);
+      if (horas <= 1) return 12;
+      if (horas <= 2) return 20;
+      if (horas > 7) return 50;
+      return 35;
+    }
+
+    function mostrarTicket(veiculo, tipo = "ENTRADA") {
+      let html = `
         <div class="ticket">
-          <h2 style="text-align:center;color:#1e40af;">🎟️ TICKET DE ENTRADA</h2>
+          <h2 style="text-align:center;color:#1e40af;">🎟️ TICKET DE ${tipo}</h2>
           <hr>
           <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
           <p><strong>Placa:</strong> ${veiculo.placa}</p>
           <p><strong>Cliente:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
-          <p><strong>Cor:</strong> ${veiculo.cor || 'Não informada'}</p>
-          <p><strong>Entrada:</strong> ${veiculo.entrada}</p>
-          <button onclick="registrarSaida('${veiculo.placa}')" style="margin-top:15px;padding:12px 25px;background:#22c55e;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Sair + Pagar</button>
-        </div>`;
+          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida || '—'}</p>
+      `;
+
+      if (tipo === "ENTRADA") {
+        html += `<button onclick="abrirModalPagamento('${veiculo.placa}')" style="margin-top:15px;padding:14px 30px;background:#22c55e;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Sair + Pagar</button>`;
+      }
+
+      html += `</div>`;
 
       const div = document.createElement('div');
-      div.innerHTML = ticketHTML;
+      div.innerHTML = html;
       document.getElementById('listaVeiculos').prepend(div);
+    }
+
+    function abrirModalPagamento(placa) {
+      veiculoParaPagar = placa;
+      const veiculo = veiculos[placa];
+      document.getElementById('modalVeiculoInfo').innerHTML = `
+        <strong>Vaga ${veiculo.vaga} - ${veiculo.placa}</strong><br>
+        ${veiculo.nome} • ${veiculo.modelo}
+      `;
+      document.getElementById('paymentModal').style.display = "flex";
+    }
+
+    function confirmarPagamento(forma) {
+      const veiculo = veiculos[veiculoParaPagar];
+      if (!veiculo) return;
+
+      veiculo.saida = formatarHora();
+      const valor = calcularValor(veiculo.entrada);
+
+      mostrarTicket(veiculo, "SAIDA");
+
+      delete veiculos[veiculoParaPagar];
+      delete vagaOcupada[veiculo.vaga];
+
+      fecharModal();
+      alert(`✅ Pagamento de R$ ${valor} realizado com ${forma}!`);
+    }
+
+    function fecharModal() {
+      document.getElementById('paymentModal').style.display = "none";
+      veiculoParaPagar = null;
     }
 
     function estacionarVeiculo() {
       const nome = document.getElementById('nomePessoa').value.trim();
       const modelo = document.getElementById('modeloVeiculo').value;
-      const cor = document.getElementById('corVeiculo').value;
 
       if (!nome || !modelo) {
         alert("⚠️ Nome do cliente e Modelo do carro são obrigatórios!");
@@ -210,45 +256,17 @@
         vaga: vaga,
         nome: nome,
         modelo: modelo,
-        cor: cor,
         entrada: formatarHora()
       };
 
       veiculos[placa] = veiculo;
       vagaOcupada[vaga] = placa;
 
-      mostrarTicket(veiculo);
+      mostrarTicket(veiculo, "ENTRADA");
 
-      // Limpar campos
       document.getElementById('nomePessoa').value = '';
       document.getElementById('placaInput').value = '';
       document.getElementById('modeloVeiculo').value = '';
-      document.getElementById('corVeiculo').value = '';
-    }
-
-    function registrarSaida(placa) {
-      const veiculo = veiculos[placa];
-      if (!veiculo) return;
-
-      const opcao = prompt("💰 PAGAMENTO OBRIGATÓRIO\n\nEscolha a forma:\n1 - Dinheiro\n2 - Débito\n3 - Crédito\n4 - PIX\n\nDigite o número:");
-
-      if (!opcao) {
-        alert("❌ Pagamento cancelado. O veículo continua no estacionamento.");
-        return;
-      }
-
-      let forma = "Não informado";
-      if (opcao === "1") forma = "💵 Dinheiro";
-      else if (opcao === "2") forma = "💳 Débito";
-      else if (opcao === "3") forma = "💳 Crédito";
-      else if (opcao === "4") forma = "📱 PIX";
-
-      veiculo.saida = formatarHora();
-      alert(`✅ Pagamento registrado com ${forma}!\nVeículo liberado da vaga ${veiculo.vaga}.`);
-
-      delete veiculos[placa];
-      delete vagaOcupada[veiculo.vaga];
-      location.reload(); // Atualiza a tela
     }
   </script>
 </body>
