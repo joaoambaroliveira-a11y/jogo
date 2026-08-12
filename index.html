@@ -7,88 +7,122 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-      color: white;
+      background: #0a0a0a;
+      color: #e0f2fe;
       margin: 0;
       padding: 20px;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.18) 0%, transparent 60%);
     }
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
+      border: 1px solid rgba(59, 130, 246, 0.3);
     }
+    h1 {
+      text-align: center;
+      font-size: 3em;
+      margin: 0;
+      background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+    }
+    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 25px; }
+
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 10px;
+      background: #1e2937;
+      color: white;
+      border: 1px solid #60a5fa;
+    }
+
+    button.big-btn {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.5em;
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+      margin-top: 15px;
+    }
+    button.big-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.9);
+    }
+
     .ticket {
       background: #fff;
       color: #000;
-      padding: 20px;
-      border: 4px dashed #000;
+      padding: 25px;
+      border: 4px dashed #1e40af;
       border-radius: 12px;
       margin: 15px 0;
-      max-width: 420px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
-    .payment-btn {
-      padding: 12px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .dinheiro { background: #22c55e; color: white; }
-    .debito { background: #3b82f6; color: white; }
-    .credito { background: #8b5cf6; color: white; }
-    .pix { background: #06b67f; color: white; }
   </style>
 </head>
 <body>
 
   <!-- LOGIN -->
   <div id="loginScreen">
-    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.95);display:flex;align-items:center;justify-content:center;z-index:1000;">
-      <div style="background:rgba(255,255,255,0.1);padding:40px;border-radius:15px;width:360px;text-align:center;">
-        <h2>🔐 Login do Sistema</h2>
-        <input type="text" id="username" value="admin" placeholder="Usuário"><br><br>
-        <input type="password" id="password" value="1234" placeholder="Senha"><br><br>
-        <button onclick="fazerLogin()" style="width:100%;padding:14px;">Entrar</button>
+    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,10,0.98);display:flex;align-items:center;justify-content:center;z-index:1000;">
+      <div style="background:rgba(15,23,42,0.95);padding:50px 40px;border-radius:20px;width:400px;text-align:center;border:2px solid #60a5fa;">
+        <h1 style="font-size:3em;margin:0;">🅿️</h1>
+        <h2 style="color:#60a5fa;margin:10px 0;">Estacionamento Simulator</h2>
+        <button onclick="fazerLogin()" style="width:100%;padding:16px;font-size:1.2em;background:#3b82f6;color:white;border:none;border-radius:12px;margin-top:20px;">ENTRAR NO SISTEMA</button>
       </div>
     </div>
   </div>
 
   <div id="mainContent" style="display:none;">
     <div class="container">
-      <h1>🅿️ Estacionamento Simulator</h1>
+      <h1>🅿️ ESTACIONAMENTO</h1>
+      <p class="subtitle">Sistema Moderno de Controle</p>
 
-      <div style="background:rgba(0,0,0,0.3);padding:25px;border-radius:12px;margin:20px 0;">
-        <h3>🚗 Estacionar Veículo</h3>
-        <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width:100%;padding:12px;margin:8px 0;">
-        <select id="modeloVeiculo" style="width:100%;padding:12px;margin:8px 0;">
-          <option value="">Escolha o modelo</option>
+      <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
+        <h3>🚗 Dados do Veículo</h3>
+        
+        <input type="text" id="nomePessoa" placeholder="Nome do Cliente / Proprietário">
+        <input type="text" id="placaInput" placeholder="Placa (opcional)">
+        <select id="modeloVeiculo">
+          <option value="">Escolha o Modelo do Carro</option>
           <option value="Volkswagen Gol">Volkswagen Gol</option>
           <option value="Chevrolet Onix">Chevrolet Onix</option>
           <option value="Hyundai HB20">Hyundai HB20</option>
           <option value="Toyota Corolla">Toyota Corolla</option>
+          <option value="Honda Civic">Honda Civic</option>
+          <option value="Fiat Uno">Fiat Uno</option>
+          <option value="Toyota Hilux">Toyota Hilux</option>
         </select>
-        <br><br>
-        <button onclick="estacionarVeiculo()" style="padding:16px 32px;font-size:1.3em;background:#22c55e;color:white;border:none;border-radius:8px;">
-          🚗 Estacionar + Gerar Ticket
+
+        <button onclick="estacionarVeiculo()" class="big-btn">
+          🚗 ESTACIONAR + GERAR TICKET
         </button>
       </div>
 
-      <h2>🎟️ Tickets Gerados</h2>
+      <h2 style="margin-top:30px;">🎟️ Tickets Gerados</h2>
       <div id="listaVeiculos"></div>
-
-      <div class="log" id="log"></div>
     </div>
   </div>
 
   <script>
-    const vagasTotais = 30;
     let veiculos = {};
     let vagaOcupada = {};
+    const vagasTotais = 30;
 
     function fazerLogin() {
       document.getElementById('loginScreen').style.display = "none";
@@ -99,13 +133,6 @@
       return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    function adicionarLog(mensagem) {
-      const log = document.getElementById('log');
-      const hora = formatarHora();
-      log.innerHTML += `<span style="color:#4ade80">[${hora}] ${mensagem}</span><br>`;
-      log.scrollTop = log.scrollHeight;
-    }
-
     function gerarPlaca() {
       const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let placa = '';
@@ -114,49 +141,38 @@
       return placa;
     }
 
-    function calcularValor(entrada) {
-      const agora = new Date();
-      const [h, m] = entrada.split(':').map(Number);
-      const entradaDate = new Date();
-      entradaDate.setHours(h, m);
-      const horas = (agora - entradaDate) / (1000 * 60 * 60);
-      return (horas * 12).toFixed(2); // R$ 12 por hora
-    }
-
-    function mostrarTicket(veiculo, tipo = "ENTRADA", pagamento = "") {
-      let html = `
+    function mostrarTicket(veiculo) {
+      const ticketHTML = `
         <div class="ticket">
-          <h2 style="text-align:center;margin:0;">🎟️ TICKET DE ${tipo}</h2>
+          <h2 style="text-align:center; color:#1e40af; margin:0;">🎟️ TICKET DE ENTRADA</h2>
           <hr>
           <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
           <p><strong>Placa:</strong> ${veiculo.placa}</p>
-          <p><strong>Nome:</strong> ${veiculo.nome}</p>
+          <p><strong>Cliente:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
-          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida}</p>
-      `;
+          <p><strong>Entrada:</strong> ${veiculo.entrada}</p>
+          <small style="display:block; text-align:center; margin-top:15px; color:#666;">Obrigado pela preferência!</small>
+        </div>`;
 
-      if (tipo === "SAIDA") {
-        const valor = calcularValor(veiculo.entrada);
-        html += `
-          <h3 style="color:#d32f2f;text-align:center;">Valor Total: R$ ${valor}</h3>
-          <p><strong>Pagamento:</strong> ${pagamento || "Não informado"}</p>
-        `;
-      }
-
-      html += `</div>`;
-      
       const div = document.createElement('div');
-      div.innerHTML = html;
+      div.innerHTML = ticketHTML;
       document.getElementById('listaVeiculos').prepend(div);
     }
 
     function estacionarVeiculo() {
       const nome = document.getElementById('nomePessoa').value.trim();
+      const modelo = document.getElementById('modeloVeiculo').value;
+
       if (!nome) {
-        alert("Digite o nome do proprietário!");
+        alert("⚠️ Por favor, digite o nome do cliente!");
+        return;
+      }
+      if (!modelo) {
+        alert("⚠️ Por favor, selecione o modelo do carro!");
         return;
       }
 
+      // Encontra vaga livre
       let vaga = null;
       for (let i = 1; i <= vagasTotais; i++) {
         if (!vagaOcupada[i]) {
@@ -165,46 +181,28 @@
         }
       }
 
-      const modelo = document.getElementById('modeloVeiculo').value || "Veículo Genérico";
-      const placa = gerarPlaca();
+      const placa = document.getElementById('placaInput').value.trim() || gerarPlaca();
 
-      const veiculo = { placa, vaga, nome, modelo, entrada: formatarHora() };
+      const veiculo = {
+        placa: placa,
+        vaga: vaga,
+        nome: nome,
+        modelo: modelo,
+        entrada: formatarHora()
+      };
+
       veiculos[placa] = veiculo;
       vagaOcupada[vaga] = placa;
 
-      mostrarTicket(veiculo, "ENTRADA");
-      adicionarLog(`✅ Ticket gerado - Vaga ${vaga}`);
+      mostrarTicket(veiculo);
 
+      // Limpa os campos
       document.getElementById('nomePessoa').value = '';
+      document.getElementById('placaInput').value = '';
       document.getElementById('modeloVeiculo').value = '';
+
+      alert(`✅ Veículo estacionado na Vaga ${vaga}! Ticket gerado.`);
     }
-
-    // Função para registrar saída com forma de pagamento
-    function registrarSaida(placa) {
-      const veiculo = veiculos[placa];
-      if (!veiculo) return;
-
-      veiculo.saida = formatarHora();
-
-      const pagamento = prompt("Escolha a forma de pagamento:\n\n1 - Dinheiro\n2 - Débito\n3 - Crédito\n4 - PIX\n\nDigite o número:");
-
-      let forma = "Não informado";
-      if (pagamento === "1") forma = "💵 Dinheiro";
-      else if (pagamento === "2") forma = "💳 Débito";
-      else if (pagamento === "3") forma = "💳 Crédito";
-      else if (pagamento === "4") forma = "📱 PIX";
-
-      mostrarTicket(veiculo, "SAIDA", forma);
-
-      delete veiculos[placa];
-      delete vagaOcupada[veiculo.vaga];
-
-      adicionarLog(`💰 Saída registrada - Pagamento: ${forma}`);
-    }
-
-    window.onload = () => {
-      adicionarLog("🚀 Sistema carregado. Estacione um veículo!");
-    };
   </script>
 </body>
 </html>
