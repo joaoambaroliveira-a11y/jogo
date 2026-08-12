@@ -41,21 +41,9 @@
       margin: 20px 0;
       text-align: center;
     }
-    .tabela-precos table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .tabela-precos th, .tabela-precos td {
-      padding: 14px;
-      border: 1px solid #60a5fa;
-    }
-    .tabela-precos th {
-      background: #1e40af;
-      color: white;
-    }
-    .tabela-precos tr:nth-child(even) {
-      background: rgba(59, 130, 246, 0.1);
-    }
+    .tabela-precos table { width: 100%; border-collapse: collapse; }
+    .tabela-precos th, .tabela-precos td { padding: 14px; border: 1px solid #60a5fa; }
+    .tabela-precos th { background: #1e40af; color: white; }
 
     input, select {
       width: 100%;
@@ -111,26 +99,10 @@
       <div class="tabela-precos">
         <h3>📋 Tabela de Valores</h3>
         <table>
-          <tr>
-            <th>Tempo de Permanência</th>
-            <th>Valor</th>
-          </tr>
-          <tr>
-            <td>Até 1 hora</td>
-            <td><strong>R$ 12,00</strong></td>
-          </tr>
-          <tr>
-            <td>Até 2 horas</td>
-            <td><strong>R$ 20,00</strong></td>
-          </tr>
-          <tr>
-            <td>De 3 a 7 horas</td>
-            <td><strong>R$ 35,00</strong></td>
-          </tr>
-          <tr style="background:#1e40af;color:white;">
-            <td><strong>Acima de 7 horas</strong></td>
-            <td><strong>R$ 50,00</strong> (valor fixo)</td>
-          </tr>
+          <tr><th>Tempo</th><th>Valor</th></tr>
+          <tr><td>Até 1 hora</td><td><strong>R$ 12,00</strong></td></tr>
+          <tr><td>Até 2 horas</td><td><strong>R$ 20,00</strong></td></tr>
+          <tr><td>Acima de 7 horas</td><td><strong>R$ 50,00</strong></td></tr>
         </table>
       </div>
 
@@ -144,7 +116,6 @@
           <option value="Hyundai HB20">Hyundai HB20</option>
           <option value="Toyota Corolla">Toyota Corolla</option>
           <option value="Honda Civic">Honda Civic</option>
-          <option value="Toyota Hilux">Toyota Hilux</option>
         </select>
         <input type="text" id="placaInput" placeholder="Placa (opcional)">
 
@@ -180,7 +151,6 @@
       return placa;
     }
 
-    // Nova função de cálculo conforme sua tabela
     function calcularValor(entrada) {
       const agora = new Date();
       const [h, m] = entrada.split(':').map(Number);
@@ -191,10 +161,10 @@
       if (horas <= 1) return 12;
       if (horas <= 2) return 20;
       if (horas > 7) return 50;
-      return 35; // entre 3 e 7 horas
+      return 35;
     }
 
-    function mostrarTicket(veiculo, tipo = "ENTRADA", formaPagamento = "") {
+    function mostrarTicket(veiculo, tipo = "ENTRADA") {
       let html = `
         <div class="ticket">
           <h2 style="text-align:center;color:#1e40af;">🎟️ TICKET DE ${tipo}</h2>
@@ -203,15 +173,11 @@
           <p><strong>Placa:</strong> ${veiculo.placa}</p>
           <p><strong>Cliente:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
-          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida}</p>
+          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida || '—'}</p>
       `;
 
-      if (tipo === "SAIDA") {
-        const valor = calcularValor(veiculo.entrada);
-        html += `<h3 style="color:#b91c1c;text-align:center;">Valor Total: R$ ${valor}</h3>
-                 <p><strong>Pagamento:</strong> ${formaPagamento}</p>`;
-      } else {
-        html += `<button onclick="registrarSaida('${veiculo.placa}')" style="margin-top:10px;padding:12px 20px;background:#22c55e;color:white;border:none;border-radius:8px;cursor:pointer;">Sair + Pagar</button>`;
+      if (tipo === "ENTRADA") {
+        html += `<button onclick="registrarSaida('${veiculo.placa}')" style="margin-top:15px;padding:12px 25px;background:#22c55e;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Sair + Pagar</button>`;
       }
 
       html += `</div>`;
@@ -221,23 +187,38 @@
       document.getElementById('listaVeiculos').prepend(div);
     }
 
+    // PAGAMENTO OBRIGATÓRIO
     function registrarSaida(placa) {
       const veiculo = veiculos[placa];
       if (!veiculo) return;
 
-      const opcao = prompt("Forma de Pagamento:\n\n1 - 💵 Dinheiro\n2 - 💳 Débito\n3 - 💳 Crédito\n4 - 📱 PIX\n\nDigite o número:");
+      const opcao = prompt("💰 PAGAMENTO OBRIGATÓRIO\n\nEscolha a forma de pagamento:\n\n1 - 💵 Dinheiro\n2 - 💳 Débito\n3 - 💳 Crédito\n4 - 📱 PIX\n\nDigite o número da opção:");
 
-      let forma = "Não informado";
+      if (!opcao) {
+        alert("❌ Pagamento cancelado. O veículo não pode sair sem pagar.");
+        return;
+      }
+
+      let forma = "";
       if (opcao === "1") forma = "💵 Dinheiro";
       else if (opcao === "2") forma = "💳 Débito";
       else if (opcao === "3") forma = "💳 Crédito";
       else if (opcao === "4") forma = "📱 PIX";
+      else {
+        alert("❌ Opção inválida! Pagamento não registrado.");
+        return;
+      }
 
+      // Só remove após pagamento confirmado
       veiculo.saida = formatarHora();
-      mostrarTicket(veiculo, "SAIDA", forma);
+      const valor = calcularValor(veiculo.entrada);
+
+      mostrarTicket(veiculo, "SAIDA");
 
       delete veiculos[placa];
       delete vagaOcupada[veiculo.vaga];
+
+      alert(`✅ Pagamento de R$ ${valor} realizado com ${forma}!\nVeículo liberado.`);
     }
 
     function estacionarVeiculo() {
@@ -272,7 +253,6 @@
 
       mostrarTicket(veiculo, "ENTRADA");
 
-      // Limpar
       document.getElementById('nomePessoa').value = '';
       document.getElementById('placaInput').value = '';
       document.getElementById('modeloVeiculo').value = '';
