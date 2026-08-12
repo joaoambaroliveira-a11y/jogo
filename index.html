@@ -7,71 +7,86 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0a0a0a;
-      color: #e0f2fe;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      color: white;
       margin: 0;
       padding: 20px;
-      min-height: 100vh;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
-        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.18) 0%, transparent 60%);
     }
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      background: rgba(15, 23, 42, 0.92);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    h1 {
-      text-align: center;
-      font-size: 3em;
-      margin: 0;
-      background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
-    }
-    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 25px; }
-
-    input, select {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border-radius: 10px;
-      background: #1e2937;
-      color: white;
-      border: 1px solid #60a5fa;
-    }
-
-    button.big-btn {
-      width: 100%;
-      padding: 20px;
-      font-size: 1.5em;
-      background: linear-gradient(90deg, #3b82f6, #60a5fa);
-      color: white;
-      border: none;
-      border-radius: 12px;
+    .tabs { display: flex; margin-bottom: 15px; }
+    .tab {
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.1);
+      margin-right: 5px;
+      border-radius: 8px 8px 0 0;
       cursor: pointer;
       font-weight: bold;
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
-      margin-top: 15px;
     }
-    button.big-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 0 40px rgba(59, 130, 246, 0.9);
-    }
+    .tab.active { background: #3b82f6; }
 
+    .vagas-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+    }
+    .vaga {
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 10px;
+    }
+    .vaga-ocupada { background: #ef4444; color: white; }
+
+    .status { text-align: center; font-size: 1.4em; margin: 15px 0; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+    .veiculo-card {
+      background: rgba(255,255,255,0.12);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border-left: 6px solid #3b82f6;
+    }
     .ticket {
       background: #fff;
       color: #000;
-      padding: 25px;
-      border: 4px dashed #1e40af;
-      border-radius: 12px;
+      padding: 20px;
+      border: 4px dashed #000;
+      border-radius: 10px;
       margin: 15px 0;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+      max-width: 420px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .log {
+      max-height: 250px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.4);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    button.big-btn {
+      padding: 16px 32px;
+      font-size: 1.3em;
+      background: #22c55e;
+      color: white;
+      font-weight: bold;
+    }
+    button.big-btn:hover {
+      background: #16a34a;
     }
   </style>
 </head>
@@ -79,50 +94,72 @@
 
   <!-- LOGIN -->
   <div id="loginScreen">
-    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,10,0.98);display:flex;align-items:center;justify-content:center;z-index:1000;">
-      <div style="background:rgba(15,23,42,0.95);padding:50px 40px;border-radius:20px;width:400px;text-align:center;border:2px solid #60a5fa;">
-        <h1 style="font-size:3em;margin:0;">🅿️</h1>
-        <h2 style="color:#60a5fa;margin:10px 0;">Estacionamento Simulator</h2>
-        <button onclick="fazerLogin()" style="width:100%;padding:16px;font-size:1.2em;background:#3b82f6;color:white;border:none;border-radius:12px;margin-top:20px;">ENTRAR NO SISTEMA</button>
+    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.95);display:flex;align-items:center;justify-content:center;z-index:1000;">
+      <div style="background:rgba(255,255,255,0.1);padding:40px;border-radius:15px;width:360px;text-align:center;">
+        <h2>🔐 Login do Sistema</h2>
+        <input type="text" id="username" value="admin" placeholder="Usuário" style="width:100%;padding:12px;margin:8px 0;border-radius:8px;background:rgba(255,255,255,0.2);color:white;"><br>
+        <input type="password" id="password" value="1234" placeholder="Senha" style="width:100%;padding:12px;margin:8px 0;border-radius:8px;background:rgba(255,255,255,0.2);color:white;"><br>
+        <button onclick="fazerLogin()" style="width:100%;padding:14px;font-size:1.1em;">Entrar</button>
       </div>
     </div>
   </div>
 
   <div id="mainContent" style="display:none;">
     <div class="container">
-      <h1>🅿️ ESTACIONAMENTO</h1>
-      <p class="subtitle">Sistema Moderno de Controle</p>
-
-      <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
-        <h3>🚗 Dados do Veículo</h3>
-        
-        <input type="text" id="nomePessoa" placeholder="Nome do Cliente / Proprietário">
-        <input type="text" id="placaInput" placeholder="Placa (opcional)">
-        <select id="modeloVeiculo">
-          <option value="">Escolha o Modelo do Carro</option>
-          <option value="Volkswagen Gol">Volkswagen Gol</option>
-          <option value="Chevrolet Onix">Chevrolet Onix</option>
-          <option value="Hyundai HB20">Hyundai HB20</option>
-          <option value="Toyota Corolla">Toyota Corolla</option>
-          <option value="Honda Civic">Honda Civic</option>
-          <option value="Fiat Uno">Fiat Uno</option>
-          <option value="Toyota Hilux">Toyota Hilux</option>
-        </select>
-
-        <button onclick="estacionarVeiculo()" class="big-btn">
-          🚗 ESTACIONAR + GERAR TICKET
-        </button>
+      <h1>🅿️ Estacionamento Simulator</h1>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="showTab(0)">📋 Cadastrar Cliente</div>
+        <div class="tab" onclick="showTab(1)">🅿️ Estacionamento</div>
       </div>
 
-      <h2 style="margin-top:30px;">🎟️ Tickets Gerados</h2>
-      <div id="listaVeiculos"></div>
+      <!-- ABA ESTACIONAMENTO -->
+      <div id="tab1">
+        <div class="status" id="status">
+          Vagas Totais: <strong>30</strong> | 
+          Ocupadas: <strong id="ocupadas">0</strong> | 
+          Sobrando: <strong id="sobrando">30</strong>
+        </div>
+
+        <h2>🚗 Vagas Ocupadas</h2>
+        <div class="vagas-grid" id="vagasGrid"></div>
+
+        <div style="background:rgba(0,0,0,0.3);padding:25px;border-radius:12px;margin:20px 0;">
+          <h3>🚗 Estacionar Novo Veículo</h3>
+          
+          <select id="clienteSelect" style="width:100%; padding:12px; margin:8px 0;" onchange="preencherDadosCliente()">
+            <option value="">Novo Cliente</option>
+          </select>
+          
+          <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width:100%; padding:12px; margin:8px 0;">
+          
+          <select id="modeloVeiculo" style="width:100%; padding:12px; margin:8px 0;">
+            <option value="">Escolha o modelo</option>
+            <option value="Volkswagen Gol">Volkswagen Gol</option>
+            <option value="Chevrolet Onix">Chevrolet Onix</option>
+            <option value="Hyundai HB20">Hyundai HB20</option>
+            <option value="Toyota Corolla">Toyota Corolla</option>
+            <option value="Honda Civic">Honda Civic</option>
+          </select>
+
+          <br><br>
+          <button onclick="estacionarVeiculo()" class="big-btn">🚗 ESTACIONAR + GERAR TICKET</button>
+        </div>
+
+        <h2>🚘 Veículos Estacionados</h2>
+        <div id="listaVeiculos"></div>
+      </div>
+
+      <div class="log" id="log"></div>
     </div>
   </div>
 
   <script>
+    const vagasTotais = 30;
+    const valorPorHora = 12;
     let veiculos = {};
     let vagaOcupada = {};
-    const vagasTotais = 30;
+    let clientes = [];
 
     function fazerLogin() {
       document.getElementById('loginScreen').style.display = "none";
@@ -133,6 +170,14 @@
       return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
+    function adicionarLog(mensagem, tipo = 'info') {
+      const log = document.getElementById('log');
+      const hora = formatarHora();
+      const cor = tipo === 'sucesso' ? '#4ade80' : '#f87171';
+      log.innerHTML += `<span style="color:${cor}">[${hora}] ${mensagem}</span><br>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
     function gerarPlaca() {
       const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let placa = '';
@@ -141,34 +186,52 @@
       return placa;
     }
 
-    function mostrarTicket(veiculo) {
-      const ticketHTML = `
+    function calcularTempo(entrada) {
+      const agora = new Date();
+      const [h, m] = entrada.split(':').map(Number);
+      const entradaDate = new Date();
+      entradaDate.setHours(h, m);
+      const diff = (agora - entradaDate) / (1000 * 60 * 60);
+      return diff.toFixed(2);
+    }
+
+    function mostrarTicket(veiculo, tipo = "ENTRADA") {
+      let html = `
         <div class="ticket">
-          <h2 style="text-align:center; color:#1e40af; margin:0;">🎟️ TICKET DE ENTRADA</h2>
+          <h2 style="margin:0; color:#000;">🎟️ TICKET DE ${tipo}</h2>
           <hr>
           <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
           <p><strong>Placa:</strong> ${veiculo.placa}</p>
-          <p><strong>Cliente:</strong> ${veiculo.nome}</p>
+          <p><strong>Nome:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
-          <p><strong>Entrada:</strong> ${veiculo.entrada}</p>
-          <small style="display:block; text-align:center; margin-top:15px; color:#666;">Obrigado pela preferência!</small>
-        </div>`;
+          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida}</p>
+      `;
+
+      if (tipo === "SAIDA") {
+        const tempo = calcularTempo(veiculo.entrada);
+        const valor = (tempo * valorPorHora).toFixed(2);
+        html += `
+          <h3 style="color:#d32f2f;">Tempo Total: ${tempo} horas</h3>
+          <h3 style="color:#d32f2f;">Valor: R$ ${valor}</h3>
+        `;
+      }
+
+      html += `<small>Obrigado pela preferência!</small></div>`;
 
       const div = document.createElement('div');
-      div.innerHTML = ticketHTML;
+      div.innerHTML = html;
       document.getElementById('listaVeiculos').prepend(div);
     }
 
     function estacionarVeiculo() {
-      const nome = document.getElementById('nomePessoa').value.trim();
-      const modelo = document.getElementById('modeloVeiculo').value;
-
-      if (!nome) {
-        alert("⚠️ Por favor, digite o nome do cliente!");
+      if (Object.keys(veiculos).length >= vagasTotais) {
+        alert("❌ Estacionamento lotado!");
         return;
       }
-      if (!modelo) {
-        alert("⚠️ Por favor, selecione o modelo do carro!");
+
+      const nome = document.getElementById('nomePessoa').value.trim();
+      if (!nome) {
+        alert("⚠️ Digite o nome do proprietário!");
         return;
       }
 
@@ -181,28 +244,70 @@
         }
       }
 
-      const placa = document.getElementById('placaInput').value.trim() || gerarPlaca();
+      const modelo = document.getElementById('modeloVeiculo').value || "Veículo Genérico";
+      const placa = gerarPlaca();
 
       const veiculo = {
         placa: placa,
         vaga: vaga,
         nome: nome,
         modelo: modelo,
-        entrada: formatarHora()
+        entrada: formatarHora(),
+        saida: null
       };
 
       veiculos[placa] = veiculo;
       vagaOcupada[vaga] = placa;
 
-      mostrarTicket(veiculo);
+      atualizarStatus();
+      renderizarVagas();
+      mostrarVeiculos();
+      mostrarTicket(veiculo, "ENTRADA");
+
+      adicionarLog(`✅ Veículo estacionado com sucesso! Ticket gerado.`, "sucesso");
 
       // Limpa os campos
       document.getElementById('nomePessoa').value = '';
-      document.getElementById('placaInput').value = '';
+      document.getElementById('clienteSelect').value = '';
       document.getElementById('modeloVeiculo').value = '';
-
-      alert(`✅ Veículo estacionado na Vaga ${vaga}! Ticket gerado.`);
     }
+
+    // Funções restantes (atualizarStatus, renderizarVagas, etc.)
+    function atualizarStatus() {
+      const ocupadas = Object.keys(veiculos).length;
+      document.getElementById('ocupadas').textContent = ocupadas;
+      document.getElementById('sobrando').textContent = vagasTotais - ocupadas;
+    }
+
+    function renderizarVagas() {
+      const grid = document.getElementById('vagasGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= vagasTotais; i++) {
+        if (vagaOcupada[i]) {
+          const div = document.createElement('div');
+          div.className = 'vaga vaga-ocupada';
+          div.textContent = i;
+          grid.appendChild(div);
+        }
+      }
+    }
+
+    function mostrarVeiculos() {
+      const lista = document.getElementById('listaVeiculos');
+      // Mantém apenas os tickets (não limpa para não perder tickets anteriores)
+    }
+
+    function showTab(n) {
+      document.getElementById('tab0').style.display = n === 0 ? 'block' : 'none';
+      document.getElementById('tab1').style.display = n === 1 ? 'block' : 'none';
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n));
+    }
+
+    // Inicialização
+    window.onload = () => {
+      document.getElementById('tab1').style.display = 'block';
+      adicionarLog("🚀 Sistema pronto! Use o botão grande para estacionar.", "sucesso");
+    };
   </script>
 </body>
 </html>
