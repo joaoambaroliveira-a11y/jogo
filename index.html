@@ -32,29 +32,16 @@
       background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
     }
-    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 25px; }
 
-    .tabs {
-      display: flex;
-      background: rgba(0,0,0,0.5);
-      padding: 8px;
-      border-radius: 15px;
-      margin-bottom: 25px;
-    }
-    .tab {
-      flex: 1;
-      padding: 16px;
-      text-align: center;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .tab.active {
-      background: #3b82f6;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 10px;
+      background: #1e2937;
+      color: white;
+      border: 1px solid #60a5fa;
     }
 
     button.big-btn {
@@ -68,30 +55,20 @@
       cursor: pointer;
       font-weight: bold;
       box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
-      transition: all 0.3s;
-    }
-    button.big-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 0 40px rgba(59, 130, 246, 0.9);
     }
 
     .ticket {
       background: #fff;
       color: #000;
-      padding: 22px;
+      padding: 25px;
       border: 4px dashed #1e40af;
       border-radius: 12px;
       margin: 15px 0;
       box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-      transition: 0.3s;
     }
-    .ticket:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-    }
-    .payment-options button {
-      padding: 10px 16px;
-      margin: 5px;
+    .payment-btn {
+      padding: 12px 18px;
+      margin: 6px 4px;
       border: none;
       border-radius: 8px;
       font-weight: bold;
@@ -101,46 +78,42 @@
 </head>
 <body>
 
-  <!-- TELA DE LOGIN -->
+  <!-- LOGIN -->
   <div id="loginScreen">
     <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,10,0.98);display:flex;align-items:center;justify-content:center;z-index:1000;">
-      <div style="background:rgba(15,23,42,0.95);padding:50px 40px;border-radius:20px;width:400px;text-align:center;border:2px solid #60a5fa;box-shadow:0 0 40px rgba(59,130,246,0.5);">
+      <div style="background:rgba(15,23,42,0.95);padding:50px;border-radius:20px;width:400px;text-align:center;border:2px solid #60a5fa;">
         <h1 style="font-size:3em;margin:0;">🅿️</h1>
-        <h2 style="color:#60a5fa;margin:10px 0;">Estacionamento Simulator</h2>
-        <p style="color:#94a3b8;">Gestão Profissional</p>
-        
-        <input type="text" id="username" value="admin" placeholder="Usuário" style="width:100%;padding:14px;margin:15px 0;border-radius:10px;background:#1e2937;color:white;border:1px solid #60a5fa;"><br>
-        <input type="password" id="password" value="1234" placeholder="Senha" style="width:100%;padding:14px;margin:15px 0;border-radius:10px;background:#1e2937;color:white;border:1px solid #60a5fa;"><br>
-        
-        <button onclick="fazerLogin()" style="width:100%;padding:16px;font-size:1.2em;background:#3b82f6;color:white;border:none;border-radius:12px;margin-top:10px;">ENTRAR NO SISTEMA</button>
+        <h2 style="color:#60a5fa;">Estacionamento Simulator</h2>
+        <button onclick="fazerLogin()" style="width:100%;padding:16px;font-size:1.2em;background:#3b82f6;color:white;border:none;border-radius:12px;margin-top:20px;">ENTRAR NO SISTEMA</button>
       </div>
     </div>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
   <div id="mainContent" style="display:none;">
     <div class="container">
       <h1>🅿️ ESTACIONAMENTO</h1>
-      <p class="subtitle">Sistema Moderno de Controle</p>
 
-      <div class="tabs">
-        <div class="tab active" onclick="showTab(0)">📋 Cadastrar Cliente</div>
-        <div class="tab" onclick="showTab(1)">🚗 Estacionamento</div>
+      <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
+        <h3>🚗 Dados do Veículo</h3>
+        <input type="text" id="nomePessoa" placeholder="Nome do Cliente">
+        <select id="modeloVeiculo">
+          <option value="">Modelo do Carro</option>
+          <option value="Volkswagen Gol">Volkswagen Gol</option>
+          <option value="Chevrolet Onix">Chevrolet Onix</option>
+          <option value="Hyundai HB20">Hyundai HB20</option>
+          <option value="Toyota Corolla">Toyota Corolla</option>
+          <option value="Honda Civic">Honda Civic</option>
+          <option value="Toyota Hilux">Toyota Hilux</option>
+        </select>
+        <input type="text" id="placaInput" placeholder="Placa (opcional)">
+
+        <button onclick="estacionarVeiculo()" class="big-btn">
+          🚗 ESTACIONAR + GERAR TICKET
+        </button>
       </div>
 
-      <!-- ABA ESTACIONAMENTO -->
-      <div id="tab1">
-        <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;text-align:center;margin:20px 0;">
-          <button onclick="estacionarVeiculo()" class="big-btn">
-            🚗 ESTACIONAR + GERAR TICKET
-          </button>
-        </div>
-
-        <h2 style="margin-top:30px;">🎟️ Tickets Gerados</h2>
-        <div id="listaVeiculos"></div>
-      </div>
-
-      <div class="log" id="log" style="margin-top:20px;"></div>
+      <h2 style="margin-top:30px;">🎟️ Tickets Gerados</h2>
+      <div id="listaVeiculos"></div>
     </div>
   </div>
 
@@ -175,53 +148,66 @@
       return (horas * 12).toFixed(2);
     }
 
-    function mostrarTicket(veiculo, tipo = "ENTRADA") {
+    function mostrarTicket(veiculo, tipo = "ENTRADA", formaPagamento = "") {
       let html = `
         <div class="ticket">
-          <h2 style="text-align:center;margin:0;color:#1e40af;">🎟️ TICKET DE ${tipo}</h2>
+          <h2 style="text-align:center;color:#1e40af;">🎟️ TICKET DE ${tipo}</h2>
           <hr>
-          <p><strong>Vaga:</strong> ${veiculo.vaga} | <strong>Placa:</strong> ${veiculo.placa}</p>
-          <p><strong>Nome:</strong> ${veiculo.nome}</p>
+          <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
+          <p><strong>Placa:</strong> ${veiculo.placa}</p>
+          <p><strong>Cliente:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
           <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida}</p>
       `;
 
       if (tipo === "SAIDA") {
         const valor = calcularValor(veiculo.entrada);
-        html += `<h3 style="color:#b91c1c;text-align:center;">Valor Total: R$ ${valor}</h3>`;
+        html += `
+          <h3 style="color:#b91c1c;text-align:center;">Valor Total: R$ ${valor}</h3>
+          <p><strong>Pagamento:</strong> ${formaPagamento}</p>
+        `;
+      } else {
+        html += `
+          <div style="margin-top:15px;">
+            <button onclick="registrarSaida('${veiculo.placa}')" style="background:#22c55e;color:white;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;">Sair + Pagar</button>
+          </div>
+        `;
       }
 
-      html += `
-          <div class="payment-options" style="margin-top:15px;">
-            <button onclick="registrarPagamento('${veiculo.placa}', 'Dinheiro')" style="background:#22c55e;color:white;">💵 Dinheiro</button>
-            <button onclick="registrarPagamento('${veiculo.placa}', 'Débito')" style="background:#3b82f6;color:white;">💳 Débito</button>
-            <button onclick="registrarPagamento('${veiculo.placa}', 'Crédito')" style="background:#8b5cf6;color:white;">💳 Crédito</button>
-            <button onclick="registrarPagamento('${veiculo.placa}', 'PIX')" style="background:#06b67f;color:white;">📱 PIX</button>
-          </div>
-        </div>`;
+      html += `</div>`;
 
       const div = document.createElement('div');
       div.innerHTML = html;
       document.getElementById('listaVeiculos').prepend(div);
     }
 
-    function registrarPagamento(placa, forma) {
+    function registrarSaida(placa) {
       const veiculo = veiculos[placa];
       if (!veiculo) return;
 
+      const opcao = prompt("Escolha a forma de pagamento:\n\n1 - 💵 Dinheiro\n2 - 💳 Débito\n3 - 💳 Crédito\n4 - 📱 PIX\n\nDigite o número:");
+
+      let forma = "Não informado";
+      if (opcao === "1") forma = "💵 Dinheiro";
+      else if (opcao === "2") forma = "💳 Débito";
+      else if (opcao === "3") forma = "💳 Crédito";
+      else if (opcao === "4") forma = "📱 PIX";
+
       veiculo.saida = formatarHora();
-      mostrarTicket(veiculo, "SAIDA");
+      mostrarTicket(veiculo, "SAIDA", forma);
 
       delete veiculos[placa];
       delete vagaOcupada[veiculo.vaga];
 
-      alert(`✅ Pagamento registrado com sucesso!\nForma: ${forma}`);
+      alert(`✅ Pagamento registrado com ${forma}`);
     }
 
     function estacionarVeiculo() {
-      const nome = document.getElementById('nomePessoa') ? document.getElementById('nomePessoa').value.trim() : prompt("Nome do proprietário:");
-      if (!nome) {
-        alert("Nome é obrigatório!");
+      const nome = document.getElementById('nomePessoa').value.trim();
+      const modelo = document.getElementById('modeloVeiculo').value;
+
+      if (!nome || !modelo) {
+        alert("⚠️ Nome do cliente e Modelo do carro são obrigatórios!");
         return;
       }
 
@@ -233,24 +219,26 @@
         }
       }
 
-      const modelo = "Veículo";
-      const placa = gerarPlaca();
+      const placa = document.getElementById('placaInput').value.trim() || gerarPlaca();
 
-      const veiculo = { placa, vaga, nome, modelo, entrada: formatarHora() };
+      const veiculo = {
+        placa: placa,
+        vaga: vaga,
+        nome: nome,
+        modelo: modelo,
+        entrada: formatarHora()
+      };
+
       veiculos[placa] = veiculo;
       vagaOcupada[vaga] = placa;
 
       mostrarTicket(veiculo, "ENTRADA");
-      alert(`✅ Veículo estacionado na Vaga ${vaga}!`);
-    }
 
-    function showTab(n) {
-      // Para futuras abas
+      // Limpar campos
+      document.getElementById('nomePessoa').value = '';
+      document.getElementById('placaInput').value = '';
+      document.getElementById('modeloVeiculo').value = '';
     }
-
-    window.onload = () => {
-      document.getElementById('tab1').style.display = 'block';
-    };
   </script>
 </body>
 </html>
