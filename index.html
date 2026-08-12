@@ -35,7 +35,7 @@
     }
 
     .tabela-precos {
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5);
       padding: 20px;
       border-radius: 12px;
       margin: 20px 0;
@@ -44,15 +44,17 @@
     .tabela-precos table {
       width: 100%;
       border-collapse: collapse;
-      margin: 15px 0;
     }
     .tabela-precos th, .tabela-precos td {
-      padding: 12px;
+      padding: 14px;
       border: 1px solid #60a5fa;
     }
     .tabela-precos th {
       background: #1e40af;
       color: white;
+    }
+    .tabela-precos tr:nth-child(even) {
+      background: rgba(59, 130, 246, 0.1);
     }
 
     input, select {
@@ -85,7 +87,6 @@
       border: 4px dashed #1e40af;
       border-radius: 12px;
       margin: 15px 0;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
   </style>
 </head>
@@ -111,7 +112,7 @@
         <h3>📋 Tabela de Valores</h3>
         <table>
           <tr>
-            <th>Tempo</th>
+            <th>Tempo de Permanência</th>
             <th>Valor</th>
           </tr>
           <tr>
@@ -119,19 +120,18 @@
             <td><strong>R$ 12,00</strong></td>
           </tr>
           <tr>
-            <td>1h01 até 2h</td>
-            <td><strong>R$ 24,00</strong></td>
+            <td>Até 2 horas</td>
+            <td><strong>R$ 20,00</strong></td>
           </tr>
           <tr>
-            <td>2h01 até 3h</td>
-            <td><strong>R$ 36,00</strong></td>
+            <td>De 3 a 7 horas</td>
+            <td><strong>R$ 35,00</strong></td>
           </tr>
-          <tr>
-            <td>Por hora adicional</td>
-            <td><strong>R$ 12,00</strong></td>
+          <tr style="background:#1e40af;color:white;">
+            <td><strong>Acima de 7 horas</strong></td>
+            <td><strong>R$ 50,00</strong> (valor fixo)</td>
           </tr>
         </table>
-        <small style="color:#94a3b8;">* Cobrança por hora iniciada</small>
       </div>
 
       <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
@@ -180,13 +180,18 @@
       return placa;
     }
 
+    // Nova função de cálculo conforme sua tabela
     function calcularValor(entrada) {
       const agora = new Date();
       const [h, m] = entrada.split(':').map(Number);
       const entradaDate = new Date();
       entradaDate.setHours(h, m);
-      const horas = (agora - entradaDate) / (1000 * 60 * 60);
-      return (horas * 12).toFixed(2);
+      let horas = (agora - entradaDate) / (1000 * 60 * 60);
+
+      if (horas <= 1) return 12;
+      if (horas <= 2) return 20;
+      if (horas > 7) return 50;
+      return 35; // entre 3 e 7 horas
     }
 
     function mostrarTicket(veiculo, tipo = "ENTRADA", formaPagamento = "") {
@@ -267,7 +272,7 @@
 
       mostrarTicket(veiculo, "ENTRADA");
 
-      // Limpar campos
+      // Limpar
       document.getElementById('nomePessoa').value = '';
       document.getElementById('placaInput').value = '';
       document.getElementById('modeloVeiculo').value = '';
