@@ -34,57 +34,48 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
+    .form-veiculo {
+      background: rgba(0,0,0,0.4);
+      padding: 30px;
+      border-radius: 15px;
+      margin: 20px 0;
     }
-    .modal-content {
+    .form-veiculo input, .form-veiculo select {
+      width: 100%;
+      padding: 15px;
+      margin: 12px 0;
+      border-radius: 10px;
       background: #1e2937;
-      padding: 40px 30px;
-      border-radius: 20px;
-      text-align: center;
-      border: 3px solid #60a5fa;
-      max-width: 520px;
-      box-shadow: 0 0 50px rgba(59, 130, 246, 0.7);
-    }
-    .modal-content h2 {
-      color: #60a5fa;
-      margin-bottom: 10px;
-      font-size: 1.8em;
-    }
-    .modal-content p {
-      margin-bottom: 25px;
-      font-size: 1.1em;
+      color: white;
+      border: 1px solid #60a5fa;
     }
 
-    .payment-option {
+    button.big-btn {
       width: 100%;
-      padding: 18px;
-      margin: 12px 0;
-      font-size: 1.3em;
-      font-weight: bold;
+      padding: 20px;
+      font-size: 1.5em;
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      color: white;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s;
-    }
-    .payment-option:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+      font-weight: bold;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
     }
 
-    .ticket {
+    .ticket, .comprovante {
       background: #fff;
       color: #000;
       padding: 25px;
       border: 4px dashed #1e40af;
       border-radius: 12px;
       margin: 15px 0;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .comprovante {
+      border-style: solid;
+      border-color: #22c55e;
     }
   </style>
 </head>
@@ -101,18 +92,18 @@
     </div>
   </div>
 
-  <!-- MODAL DE PAGAMENTO MELHORADO -->
-  <div id="paymentModal" class="modal">
-    <div class="modal-content">
-      <h2>💰 PAGAMENTO OBRIGATÓRIO</h2>
-      <p id="modalVeiculoInfo" style="margin-bottom:25px;font-size:1.2em;"></p>
+  <!-- MODAL DE PAGAMENTO -->
+  <div id="paymentModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:2000;">
+    <div style="background:#1e2937;padding:40px;border-radius:20px;text-align:center;border:3px solid #60a5fa;max-width:500px;">
+      <h2 style="color:#60a5fa;">💰 PAGAMENTO OBRIGATÓRIO</h2>
+      <p id="modalVeiculoInfo" style="margin:20px 0;font-size:1.2em;"></p>
       
-      <button class="payment-option" style="background:#22c55e;color:white;" onclick="confirmarPagamento('Dinheiro')">💵 DINHEIRO</button>
-      <button class="payment-option" style="background:#3b82f6;color:white;" onclick="confirmarPagamento('Débito')">💳 DÉBITO</button>
-      <button class="payment-option" style="background:#8b5cf6;color:white;" onclick="confirmarPagamento('Crédito')">💳 CRÉDITO</button>
-      <button class="payment-option" style="background:#06b67f;color:white;" onclick="confirmarPagamento('PIX')">📱 PIX</button>
+      <button onclick="confirmarPagamento('Dinheiro')" style="width:100%;padding:18px;margin:10px 0;background:#22c55e;color:white;border:none;border-radius:10px;font-size:1.2em;">💵 DINHEIRO</button>
+      <button onclick="confirmarPagamento('Débito')" style="width:100%;padding:18px;margin:10px 0;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:1.2em;">💳 DÉBITO</button>
+      <button onclick="confirmarPagamento('Crédito')" style="width:100%;padding:18px;margin:10px 0;background:#8b5cf6;color:white;border:none;border-radius:10px;font-size:1.2em;">💳 CRÉDITO</button>
+      <button onclick="confirmarPagamento('PIX')" style="width:100%;padding:18px;margin:10px 0;background:#06b67f;color:white;border:none;border-radius:10px;font-size:1.2em;">📱 PIX</button>
       
-      <button onclick="fecharModal()" style="margin-top:20px;background:#ef4444;color:white;padding:12px 40px;border:none;border-radius:8px;font-size:1.1em;">Cancelar</button>
+      <button onclick="fecharModal()" style="margin-top:20px;background:#ef4444;color:white;padding:12px 40px;border:none;border-radius:8px;">Cancelar</button>
     </div>
   </div>
 
@@ -120,7 +111,7 @@
     <div class="container">
       <h1>🅿️ ESTACIONAMENTO</h1>
 
-      <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
+      <div class="form-veiculo">
         <h3>🚗 Dados do Veículo</h3>
         <input type="text" id="nomePessoa" placeholder="Nome do Cliente">
         <select id="modeloVeiculo">
@@ -131,7 +122,7 @@
           <option value="Toyota Corolla">Toyota Corolla</option>
           <option value="Honda Civic">Honda Civic</option>
         </select>
-        <input type="text" id="placaInput" placeholder="Placa (opcional)">
+        <input type="text" id="placaInput" placeholder="Placa (opcional)" style="text-transform:uppercase;">
 
         <button onclick="estacionarVeiculo()" class="big-btn">
           🚗 ESTACIONAR + GERAR TICKET
@@ -203,10 +194,10 @@
 
     function abrirModalPagamento(placa) {
       veiculoParaPagar = placa;
-      const veiculo = veiculos[placa];
+      const v = veiculos[placa];
       document.getElementById('modalVeiculoInfo').innerHTML = `
-        <strong>Vaga ${veiculo.vaga} - ${veiculo.placa}</strong><br>
-        ${veiculo.nome} • ${veiculo.modelo}
+        <strong>Vaga ${v.vaga} — ${v.placa}</strong><br>
+        ${v.nome} • ${v.modelo}
       `;
       document.getElementById('paymentModal').style.display = "flex";
     }
@@ -218,18 +209,37 @@
       veiculo.saida = formatarHora();
       const valor = calcularValor(veiculo.entrada);
 
-      mostrarTicket(veiculo, "SAIDA");
+      // Mostra o comprovante
+      mostrarComprovante(veiculo, forma, valor);
 
       delete veiculos[veiculoParaPagar];
       delete vagaOcupada[veiculo.vaga];
 
       fecharModal();
-      alert(`✅ Pagamento de R$ ${valor} realizado com ${forma}!`);
+    }
+
+    function mostrarComprovante(veiculo, forma, valor) {
+      const comprovanteHTML = `
+        <div class="ticket" style="border-color:#22c55e;">
+          <h2 style="text-align:center;color:#166534;">✅ COMPROVANTE DE PAGAMENTO</h2>
+          <hr>
+          <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
+          <p><strong>Placa:</strong> ${veiculo.placa}</p>
+          <p><strong>Cliente:</strong> ${veiculo.nome}</p>
+          <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
+          <p><strong>Saída:</strong> ${veiculo.saida}</p>
+          <h3 style="color:#166534;text-align:center;">Valor Pago: R$ ${valor}</h3>
+          <p><strong>Forma de Pagamento:</strong> ${forma}</p>
+          <small style="display:block;text-align:center;margin-top:15px;color:#166534;">Obrigado pela preferência! Volte sempre.</small>
+        </div>`;
+
+      const div = document.createElement('div');
+      div.innerHTML = comprovanteHTML;
+      document.getElementById('listaVeiculos').prepend(div);
     }
 
     function fecharModal() {
       document.getElementById('paymentModal').style.display = "none";
-      veiculoParaPagar = null;
     }
 
     function estacionarVeiculo() {
@@ -251,7 +261,7 @@
 
       const placa = document.getElementById('placaInput').value.trim().toUpperCase() || gerarPlaca();
 
-A      const veiculo = {
+      const veiculo = {
         placa: placa,
         vaga: vaga,
         nome: nome,
