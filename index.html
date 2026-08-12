@@ -53,46 +53,41 @@
     .vaga-ocupada { background: #ef4444; color: white; }
 
     .status { text-align: center; font-size: 1.4em; margin: 15px 0; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; }
-    .veiculo-card {
-      background: rgba(255,255,255,0.12);
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border-left: 6px solid #3b82f6;
-    }
+
     .ticket {
       background: #fff;
       color: #000;
       padding: 20px;
       border: 4px dashed #000;
-      border-radius: 10px;
+      border-radius: 12px;
       margin: 15px 0;
       max-width: 420px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .log {
-      max-height: 250px;
-      overflow-y: auto;
-      background: rgba(0,0,0,0.4);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
+    .ticket:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     }
-    button.big-btn {
-      padding: 16px 32px;
-      font-size: 1.3em;
-      background: #22c55e;
+    .ticket button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: #3b82f6;
       color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
       font-weight: bold;
     }
-    button.big-btn:hover {
-      background: #16a34a;
+    .ticket button:hover {
+      background: #2563eb;
     }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (mesmo de antes) -->
   <div id="loginScreen">
     <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.95);display:flex;align-items:center;justify-content:center;z-index:1000;">
       <div style="background:rgba(255,255,255,0.1);padding:40px;border-radius:15px;width:360px;text-align:center;">
@@ -108,47 +103,25 @@
     <div class="container">
       <h1>🅿️ Estacionamento Simulator</h1>
       
-      <div class="tabs">
-        <div class="tab active" onclick="showTab(0)">📋 Cadastrar Cliente</div>
-        <div class="tab" onclick="showTab(1)">🅿️ Estacionamento</div>
+      <div style="background:rgba(0,0,0,0.3);padding:25px;border-radius:12px;margin:20px 0;">
+        <h3>🚗 Estacionar Novo Veículo</h3>
+        <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width:100%; padding:12px; margin:8px 0;">
+        <select id="modeloVeiculo" style="width:100%; padding:12px; margin:8px 0;">
+          <option value="">Escolha o modelo</option>
+          <option value="Volkswagen Gol">Volkswagen Gol</option>
+          <option value="Chevrolet Onix">Chevrolet Onix</option>
+          <option value="Hyundai HB20">Hyundai HB20</option>
+          <option value="Toyota Corolla">Toyota Corolla</option>
+          <option value="Honda Civic">Honda Civic</option>
+        </select>
+        <br><br>
+        <button onclick="estacionarVeiculo()" style="padding:16px 32px; font-size:1.3em; background:#22c55e; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">
+          🚗 ESTACIONAR + GERAR TICKET
+        </button>
       </div>
 
-      <!-- ABA ESTACIONAMENTO -->
-      <div id="tab1">
-        <div class="status" id="status">
-          Vagas Totais: <strong>30</strong> | 
-          Ocupadas: <strong id="ocupadas">0</strong> | 
-          Sobrando: <strong id="sobrando">30</strong>
-        </div>
-
-        <h2>🚗 Vagas Ocupadas</h2>
-        <div class="vagas-grid" id="vagasGrid"></div>
-
-        <div style="background:rgba(0,0,0,0.3);padding:25px;border-radius:12px;margin:20px 0;">
-          <h3>🚗 Estacionar Novo Veículo</h3>
-          
-          <select id="clienteSelect" style="width:100%; padding:12px; margin:8px 0;" onchange="preencherDadosCliente()">
-            <option value="">Novo Cliente</option>
-          </select>
-          
-          <input type="text" id="nomePessoa" placeholder="Nome do Proprietário" style="width:100%; padding:12px; margin:8px 0;">
-          
-          <select id="modeloVeiculo" style="width:100%; padding:12px; margin:8px 0;">
-            <option value="">Escolha o modelo</option>
-            <option value="Volkswagen Gol">Volkswagen Gol</option>
-            <option value="Chevrolet Onix">Chevrolet Onix</option>
-            <option value="Hyundai HB20">Hyundai HB20</option>
-            <option value="Toyota Corolla">Toyota Corolla</option>
-            <option value="Honda Civic">Honda Civic</option>
-          </select>
-
-          <br><br>
-          <button onclick="estacionarVeiculo()" class="big-btn">🚗 ESTACIONAR + GERAR TICKET</button>
-        </div>
-
-        <h2>🚘 Veículos Estacionados</h2>
-        <div id="listaVeiculos"></div>
-      </div>
+      <h2>🎟️ Tickets Gerados</h2>
+      <div id="listaVeiculos"></div>
 
       <div class="log" id="log"></div>
     </div>
@@ -156,10 +129,8 @@
 
   <script>
     const vagasTotais = 30;
-    const valorPorHora = 12;
     let veiculos = {};
     let vagaOcupada = {};
-    let clientes = [];
 
     function fazerLogin() {
       document.getElementById('loginScreen').style.display = "none";
@@ -170,11 +141,10 @@
       return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    function adicionarLog(mensagem, tipo = 'info') {
+    function adicionarLog(mensagem) {
       const log = document.getElementById('log');
       const hora = formatarHora();
-      const cor = tipo === 'sucesso' ? '#4ade80' : '#f87171';
-      log.innerHTML += `<span style="color:${cor}">[${hora}] ${mensagem}</span><br>`;
+      log.innerHTML += `<span style="color:#4ade80">[${hora}] ${mensagem}</span><br>`;
       log.scrollTop = log.scrollHeight;
     }
 
@@ -186,56 +156,42 @@
       return placa;
     }
 
-    function calcularTempo(entrada) {
-      const agora = new Date();
-      const [h, m] = entrada.split(':').map(Number);
-      const entradaDate = new Date();
-      entradaDate.setHours(h, m);
-      const diff = (agora - entradaDate) / (1000 * 60 * 60);
-      return diff.toFixed(2);
-    }
-
-    function mostrarTicket(veiculo, tipo = "ENTRADA") {
-      let html = `
-        <div class="ticket">
-          <h2 style="margin:0; color:#000;">🎟️ TICKET DE ${tipo}</h2>
-          <hr>
+    function mostrarTicket(veiculo) {
+      const ticketHTML = `
+        <div class="ticket" onclick="alert('Ticket da Vaga ${veiculo.vaga} - ${veiculo.placa}\\n\\nProprietário: ${veiculo.nome}')" style="cursor:pointer;">
+          <h2 style="margin:0; text-align:center; color:#000;">🎟️ TICKET DE ESTACIONAMENTO</h2>
+          <hr style="border:1px dashed #000;">
           <p><strong>Vaga:</strong> ${veiculo.vaga}</p>
           <p><strong>Placa:</strong> ${veiculo.placa}</p>
           <p><strong>Nome:</strong> ${veiculo.nome}</p>
           <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
-          <p><strong>${tipo}:</strong> ${tipo === "ENTRADA" ? veiculo.entrada : veiculo.saida}</p>
-      `;
-
-      if (tipo === "SAIDA") {
-        const tempo = calcularTempo(veiculo.entrada);
-        const valor = (tempo * valorPorHora).toFixed(2);
-        html += `
-          <h3 style="color:#d32f2f;">Tempo Total: ${tempo} horas</h3>
-          <h3 style="color:#d32f2f;">Valor: R$ ${valor}</h3>
-        `;
-      }
-
-      html += `<small>Obrigado pela preferência!</small></div>`;
+          <p><strong>Entrada:</strong> ${veiculo.entrada}</p>
+          <button onclick="event.stopImmediatePropagation(); imprimirTicket(this)">🖨️ Imprimir Ticket</button>
+        </div>`;
 
       const div = document.createElement('div');
-      div.innerHTML = html;
+      div.innerHTML = ticketHTML;
       document.getElementById('listaVeiculos').prepend(div);
     }
 
-    function estacionarVeiculo() {
-      if (Object.keys(veiculos).length >= vagasTotais) {
-        alert("❌ Estacionamento lotado!");
-        return;
-      }
+    function imprimirTicket(btn) {
+      event.stopImmediatePropagation();
+      const ticket = btn.parentElement;
+      const originalContent = document.body.innerHTML;
+      
+      document.body.innerHTML = ticket.outerHTML;
+      window.print();
+      document.body.innerHTML = originalContent;
+      location.reload(); // Recarrega para voltar ao sistema
+    }
 
+    function estacionarVeiculo() {
       const nome = document.getElementById('nomePessoa').value.trim();
       if (!nome) {
-        alert("⚠️ Digite o nome do proprietário!");
+        alert("⚠️ Por favor, digite o nome do proprietário!");
         return;
       }
 
-      // Encontra vaga livre
       let vaga = null;
       for (let i = 1; i <= vagasTotais; i++) {
         if (!vagaOcupada[i]) {
@@ -247,66 +203,21 @@
       const modelo = document.getElementById('modeloVeiculo').value || "Veículo Genérico";
       const placa = gerarPlaca();
 
-      const veiculo = {
-        placa: placa,
-        vaga: vaga,
-        nome: nome,
-        modelo: modelo,
-        entrada: formatarHora(),
-        saida: null
-      };
+      const veiculo = { placa, vaga, nome, modelo, entrada: formatarHora() };
 
       veiculos[placa] = veiculo;
       vagaOcupada[vaga] = placa;
 
-      atualizarStatus();
-      renderizarVagas();
-      mostrarVeiculos();
-      mostrarTicket(veiculo, "ENTRADA");
+      mostrarTicket(veiculo);
+      adicionarLog(`✅ Ticket gerado para ${nome} - Vaga ${vaga}`);
 
-      adicionarLog(`✅ Veículo estacionado com sucesso! Ticket gerado.`, "sucesso");
-
-      // Limpa os campos
+      // Limpa campos
       document.getElementById('nomePessoa').value = '';
-      document.getElementById('clienteSelect').value = '';
       document.getElementById('modeloVeiculo').value = '';
     }
 
-    // Funções restantes (atualizarStatus, renderizarVagas, etc.)
-    function atualizarStatus() {
-      const ocupadas = Object.keys(veiculos).length;
-      document.getElementById('ocupadas').textContent = ocupadas;
-      document.getElementById('sobrando').textContent = vagasTotais - ocupadas;
-    }
-
-    function renderizarVagas() {
-      const grid = document.getElementById('vagasGrid');
-      grid.innerHTML = '';
-      for (let i = 1; i <= vagasTotais; i++) {
-        if (vagaOcupada[i]) {
-          const div = document.createElement('div');
-          div.className = 'vaga vaga-ocupada';
-          div.textContent = i;
-          grid.appendChild(div);
-        }
-      }
-    }
-
-    function mostrarVeiculos() {
-      const lista = document.getElementById('listaVeiculos');
-      // Mantém apenas os tickets (não limpa para não perder tickets anteriores)
-    }
-
-    function showTab(n) {
-      document.getElementById('tab0').style.display = n === 0 ? 'block' : 'none';
-      document.getElementById('tab1').style.display = n === 1 ? 'block' : 'none';
-      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n));
-    }
-
-    // Inicialização
     window.onload = () => {
-      document.getElementById('tab1').style.display = 'block';
-      adicionarLog("🚀 Sistema pronto! Use o botão grande para estacionar.", "sucesso");
+      adicionarLog("🚀 Sistema pronto! Estacione um veículo para gerar ticket.");
     };
   </script>
 </body>
