@@ -34,6 +34,27 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .tabela-precos {
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .tabela-precos table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    .tabela-precos th, .tabela-precos td {
+      padding: 12px;
+      border: 1px solid #60a5fa;
+    }
+    .tabela-precos th {
+      background: #1e40af;
+      color: white;
+    }
+
     input, select {
       width: 100%;
       padding: 14px;
@@ -66,14 +87,6 @@
       margin: 15px 0;
       box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
-    .payment-btn {
-      padding: 12px 18px;
-      margin: 6px 4px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -92,6 +105,34 @@
   <div id="mainContent" style="display:none;">
     <div class="container">
       <h1>🅿️ ESTACIONAMENTO</h1>
+
+      <!-- TABELA DE PREÇOS -->
+      <div class="tabela-precos">
+        <h3>📋 Tabela de Valores</h3>
+        <table>
+          <tr>
+            <th>Tempo</th>
+            <th>Valor</th>
+          </tr>
+          <tr>
+            <td>Até 1 hora</td>
+            <td><strong>R$ 12,00</strong></td>
+          </tr>
+          <tr>
+            <td>1h01 até 2h</td>
+            <td><strong>R$ 24,00</strong></td>
+          </tr>
+          <tr>
+            <td>2h01 até 3h</td>
+            <td><strong>R$ 36,00</strong></td>
+          </tr>
+          <tr>
+            <td>Por hora adicional</td>
+            <td><strong>R$ 12,00</strong></td>
+          </tr>
+        </table>
+        <small style="color:#94a3b8;">* Cobrança por hora iniciada</small>
+      </div>
 
       <div style="background:rgba(0,0,0,0.4);padding:30px;border-radius:15px;">
         <h3>🚗 Dados do Veículo</h3>
@@ -162,16 +203,10 @@
 
       if (tipo === "SAIDA") {
         const valor = calcularValor(veiculo.entrada);
-        html += `
-          <h3 style="color:#b91c1c;text-align:center;">Valor Total: R$ ${valor}</h3>
-          <p><strong>Pagamento:</strong> ${formaPagamento}</p>
-        `;
+        html += `<h3 style="color:#b91c1c;text-align:center;">Valor Total: R$ ${valor}</h3>
+                 <p><strong>Pagamento:</strong> ${formaPagamento}</p>`;
       } else {
-        html += `
-          <div style="margin-top:15px;">
-            <button onclick="registrarSaida('${veiculo.placa}')" style="background:#22c55e;color:white;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;">Sair + Pagar</button>
-          </div>
-        `;
+        html += `<button onclick="registrarSaida('${veiculo.placa}')" style="margin-top:10px;padding:12px 20px;background:#22c55e;color:white;border:none;border-radius:8px;cursor:pointer;">Sair + Pagar</button>`;
       }
 
       html += `</div>`;
@@ -185,7 +220,7 @@
       const veiculo = veiculos[placa];
       if (!veiculo) return;
 
-      const opcao = prompt("Escolha a forma de pagamento:\n\n1 - 💵 Dinheiro\n2 - 💳 Débito\n3 - 💳 Crédito\n4 - 📱 PIX\n\nDigite o número:");
+      const opcao = prompt("Forma de Pagamento:\n\n1 - 💵 Dinheiro\n2 - 💳 Débito\n3 - 💳 Crédito\n4 - 📱 PIX\n\nDigite o número:");
 
       let forma = "Não informado";
       if (opcao === "1") forma = "💵 Dinheiro";
@@ -198,8 +233,6 @@
 
       delete veiculos[placa];
       delete vagaOcupada[veiculo.vaga];
-
-      alert(`✅ Pagamento registrado com ${forma}`);
     }
 
     function estacionarVeiculo() {
